@@ -1,0 +1,356 @@
+\documentclass[a4paper,12pt,titlepage]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\newtheorem{defi}{Definici\'on}[section]
+\newtheorem{eje}{Ejemplo}[section]
+\newtheorem{obs}{Observaci\'on}[section]
+\newtheorem{teo}{Teorema}[section]
+\newtheorem*{dem}{\textbf{Demostraci\'on}}
+
+\graphicspath{ {images/} }
+
+\title{Estudio de complejidad y aproximabilidad}
+\author{Aitor Godoy Fresneda}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  {\bfseries\LARGE Universidad Complutense de Madrid \par}
+  \vspace{1cm}
+  {\scshape\Large Facultad de Matemáticas \par}
+  \vspace{2cm}
+  {\scshape\Huge Estudio de Complejidad y aproximabilidad \par}
+  \vspace{2cm}
+  {\includegraphics[width=0.8\textwidth]{uni2}\par}
+  \vspace{1cm}
+  {\itshape\Large Trabajo de Fin de Grado \par}
+  \vfill
+  {\Large Autor: \par}
+  {\Large Aitor Godoy Fresneda \par}
+  \vfill
+  {\Large Julio 2020 \par}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+\section{Motivaci\'on.}
+
+El hecho de encontrar una soluci\'on \'otima para un problema NP-Duro con un algoritmo que tarde un tiempo polin\'omico parezca muy improbable ha conseguido que varios investigadores y profesionales de diversos servicios intenten resolver estos problemas con m\'etodos heur\'istios, es decir, encontrar una soluci\'on que se ``acerque'' a la \'optima pero que tenga un tiempo mucho m\'as razonable.
+
+Dentro de los m\'etodos heur\'isticos para resolver problemas NP-Duros, los algoritmos de aproximaci\'on polin\'omicos trantan de resolver un problema NP-Duro en tiempo polin\'omico obteniendo una soluci\'on que estar\'a (bajo cierto criterio) tan cerca de la \'optima como sea posible.
+
+Para ver esto primero introducieremos brevemente la teor\'ia de la intratabilidad, hablando de qu\'e son los problemas P, NP, NP-Completos, qu\'e son las reducciones polin\'omicas y veremos algunos problemas espec\'ificos, a continuaci\'on describiremos cuales son las diferentes clases de aproximaci\'on y hablaremos sobre los dos principales paradigmas que hay en esta, clasificaremos varios problemas importantes de grafos y optimizaci\'on como el problema de la mochila o el problema del viajante, y por \'ultimo veremos como usar las reducciones polin\'omicas en las clases de aproximaci\'on \cite{approx_core} 
+
+\newpage
+
+\section{Preliminares.}
+
+En esta secci\'on vamos a presentar las clases P, NP y NP-completos, son 3
+clases principales de problemas y son la base de la teor\'ia de complejidad
+y necesarias para hablar sobre las clases de aproximaci\'on.
+
+\begin{obs}
+
+Un detalle importante es que para las clases P y NP debemos tratar con problemas de decisi\'on, es decir, problemas de si o no, pero a la hora de hablar de estos problemas los mencionaremos como un problema de optimizaci\'on abusando un poco de notaci\'on, ahora bien, para traducir esos problemas de optimizaci\'on en problemas de decisi\'on lo que tenemos que hacer es preguntarnos si para cierto k, es posible obtener un beneficio $\geq$k
+
+\end{obs}
+
+Para definir P y NP es necesario saber que es la \textsl{complejidad temporal:} $T(n)$.
+
+\begin{defi}
+
+Decimos que un algoritmo tiene \textbf{complejidad temporal}
+$T(n)$ si siempre que reciba una entrada de tamaño n \'este se
+ejecute como m\'aximo en $T(n)$ movimientos.
+
+\end{defi}
+
+\subsection{La clase P.}
+
+\begin{defi}
+
+Decimos que un problema pertenece a \textbf{P} cuando existe una m\'aquina de Turing determinista que lo resuelve en tiempo polin\'omico.
+
+\end{defi}
+
+\begin{eje}
+
+Dentro de P tenemos tenemos varios problemas como:
+
+\begin{itemize}
+  \item El problema de primalidad respecto del n\'umero de cifras, se resuelve mediante el algoritmo de AKS y su complejidad algor\'itmica es de $T(n) = n^{21/2}$ \cite{aks_complexity} con respecto al n\'umero de cifras del n\'umero
+  \item El problema de ordenaci\'on de un vector de n elementos de enteros se puede resolver mediante el algoritmo de quicksort con complejidad algor\'itmica de $T(n) = n^{2}$.
+  \item El problema de encontrar el camino m\'as corto entre dos v\'ertices de un grafo se puede hallar mediante el algoritmo de BFS, y su complejidad algor\'itmica es de $T(n) = n^{2}$.
+\end{itemize}
+
+\end{eje}
+
+\subsection{La clase NP.}
+
+\begin{defi}
+
+Decimos que un problema pertenece a \textbf{NP} cuando existe una m\'aquina de Turing no determinista que lo resuelve en tiempo polin\'omico.
+
+\end{defi}
+
+\begin{obs}
+
+Algo a destacar es que con esta definici\'on cualquier problema que pertenezca a P tambi\'en pertenece a NP, ya que una m\'aquina de Turing determinista es una m\'aquina de Turing no determinista que no tiene opci\'on a elegir entre varios movimientos, por tanto $P \subseteq NP$.
+
+\end{obs}
+
+\begin{obs}
+
+Otra forma de ver los problemas NP es que dada una posible soluci\'on x, podemos encontrar en tiempo polin\'omico si dicha x satisface los requisitos pedidos al problema previo.
+
+\end {obs}
+
+\begin{eje}
+
+Algunos problemas que pertenecen a NP son:
+
+\begin{itemize}
+
+  \item \textbf{El problema de la mochila}, en este problema se te da una mochila de tamaño $B \in Z\textsuperscript{+}$ y un conjunto S = \{a\textsubscript{1},...,a\textsubscript{n}\} de objetos con sus correspondientes precios s(a\textsubscript{i}) $\in$ Z\textsuperscript{+} y tamaños p(a\textsubscript{i}) $\in$ Z\textsuperscript{+}. El objetivo es encontrar el subconjunto $S^{*}$ de objetos tal que el tamaño de la suma de objetos de $S^{*}$ no sobrepase B y obteniendo el mayor beneficio con ellos \cite{knapsack1}.
+  \item \textbf{El problema Min TSP}, dado un grafo completo\footnote{Un grafo completo es aquel en el que para cada par de v\'ertices existe al menos una arista entre ellos} de n v\'ertices, $K_{n}$, con valores positivos en sus aristas, MIN TSP consiste en determinar el camino Hamiltoniano\footnote{Es aquel camino que recorre todos los v\'ertices de un grafo sin repetir ninguno} de menor coste \cite{approx_core}
+  \item \textbf{El problema CLIQUE}, que trata de encontrar el mayor subgrafo G' dentro de un grafo G en el que todos los v\'ertices de G' est\'en conectados entre ellos por aristas
+  
+\end{itemize}
+
+\end{eje}
+
+En estos ejemplos se ve que no se ha indicado su complejidad temporal. \'Esto
+se debe a que a pesar de que es uno de los problemas matem\'aticos m\'as
+importantes de los \'ultimos años, a\'un no se ha conseguido determinar
+si $P = NP$ o $P \neq NP$, por eso, aunque actualmente conocemos algoritmos
+exponenciales para resolver algunos de estos problemas, si se probase que
+$P = NP$ entonces estos problemas se resolver\'ian en tiempo polin\'omico.
+
+\subsection{La clase NP-Completos.}
+
+De las tres clases que hemos visto, \'esta ser\'a la que m\'as nos va a
+interesar, ya que las clases de aproximaci\'on estar\'an contenidas aqu\'i.
+
+Pero para definir que son los problemas NP-Completos primero necesitamos
+saber que son las reducciones polin\'omicas y los problemas NP-Duros.
+
+\begin{defi}
+
+Sean $P_{1}$ y $P_{2}$ dos problemas, se denomina \textbf{reducci\'on de $P_{1}$ a $P_{2}$ en tiempo polin\'omino} a aquella transformaci\'on del problema $P_{1}$ en el problema $P_{2}$ y adem\'as transforme cualquier entrada de $P_{1}$ en una entrada de $P_{2}$ todo en tiempo polin\'omico de modo que si resolvemos el problema $P_{2}$ lo \'unico que tendr\'iamos que hacer para resolver $P_{1}$ es transformarlo en $P_{2}$ y resolverlo.
+
+\end{defi}
+
+Estas reducciones nos son realmente \'utiles ya que podremos demostrar
+que una cantidad importante de problemas son NP-Completos sin necesidad
+de hacerlo directamente, nos basta con tener un problema NP-Completo para
+poder probar el resto.
+
+\begin{defi}
+
+Un problema P es \textbf{NP-Duro} si para todo problema P' $\in$ NP existe una reducci\'on en tiempo polin\'omico de P' a P.
+
+\end{defi}
+
+Finalmente.
+
+\begin{defi}
+
+Un problema es \textbf{NP-Completo} si es NP-Duro y adem\'as pertenece a NP
+
+\end{defi}
+
+Estos problemas son increiblemente importantes en la teor\'ia de la intratabilidad ya que son aquellos que parecen m\'as improbables de pertenecer a P que el resto
+
+\begin{eje}
+
+Algunos ejemplos de problemas NP-Completos son:
+
+\begin{itemize}
+
+  \item \textbf{El problema de Satisfactibilidad (SAT)}, dado una formula de l\'ogica (proposicional o de primer orden), consiste en ver si \'esta es satisfactible o no. Este es el primer problema que se prob\'o ser Np-Completo por el Teorema de Cook \cite{AroraBarak}.
+  \item \textbf{El problema de los conjuntos independientes (PCI)}, sea un grafo G no dirigido. Trata de hallar el conjunto independiente\footnote{Es aquel t.q ninguna de sus v\'ertices est\'an conectados entre si} maximal de un grafo \cite{approx_core}.
+  \item \textbf{El problema de la mochila (Knapsack)}\footnote{Definido en el Ejemplo 2.2}.
+  
+\end{itemize}
+
+\end{eje}
+
+Los problemas NP-Completos son los problemas m\'as importantes en la teor\'ia de la intratabilidad, esto se debe al siguiente resultado:
+
+\begin{teo}
+
+Si alg\'un problema NP-Completo pertenece a P, entonces P = NP.
+
+\begin{dem}
+
+Supongamos que S es un problema NP-Completo y $S \in P$. Entonces, sea F $\in$ NP $\Rightarrow$ $\exists$ una reducci\'on polin\'omica de F a S. Como S $\in$ P $\Rightarrow$ F $\in$ P. Como hemos hecho esto para un problema F arbitrario entonces $\forall$F $\in$ NP, F $\in$ P y por tanto llegamos a que P = NP.
+
+\end{dem}
+
+\end{teo}
+
+\subsection{Reducciones polin\'omicas.}
+
+Anteriormente hemos mencionado que el problema SAT\footnote{El problema de Satisfactibilidad} fue el primer problema que se prob\'o pertenec\'ia a la clase NP-Completo, \'esto es muy importante debido a que es muy dif\'icil probar que todo problema en NP se puede reducir a otro. Aqu\'i entran en juego las reducciones polin\'omicas que nos ayudaran enormemente a demostrar que algunos problemas son NP-Completos sin necesidad de reducir todo problema de NP.
+
+En esta secci\'on veremos un resultado muy importante para ayudarnos a probar que los problemas son NP-Completos y veremos ejemplos de c\'omo hacerlo.
+
+\begin{teo}
+
+Si $P_{1}$ es NP-Completo y existe una reducci\'on en tiempo polin\'omico de $P_{1}$ a $P_2$ entonces $P_2$ es NP-Completo.
+
+\begin{dem}
+
+Tenemos que demostrar que todo lenguaje $L$ de $NP$ se reduce en tiempo polin\'omico a $P_2$. Sabemos que existe una reducci\'on en tiempo polin\'omico de L a $P_2$. Por tanto, una cadena $w$ de $L$ de longitud $n$ se convierte en una cadena $x$ de $P_1$ de longitud m\'axima $p(n)$.
+
+Adem\'as sabemos que existe una reducci\'on en tiempo polin\'omico de $P_1$ a $P_2$ que tarda $q(m)$. Entonces esta reducci\'on transforma x en cierta cadena $y$ de $P_2$ tardando un tiempo m\'aximo de $q(p(n))$, por tanto la transformaci\'on de $w$ en $y$ tarda un tiempo m\'aximo de $p(n) + q(p(n))$, por lo que L es reducible en tiempo polin\'omico a $P_2$, y como L puede ser cualquier lenguaje de $NP$, tenemos que $P_2$ es NP-Completo.
+
+\end{dem}
+
+\end{teo}
+
+Este resultado es increiblemente \'util, ya que podemos probar que un problema es NP-Completo reduci\'endolo de alg\'un otro que ya sepamos que es NP-Completo.
+
+Ahora veremos algunos ejemplos de como usar este resultado para probar que un problema es NP-Completo.
+
+\begin{eje}
+
+\textbf{El problema de los conjuntos independientes (PCI)}
+\vspace{\baselineskip}
+
+Sea G un grafo no dirigido. Decimos que un subconjunto $I$ de los nodos de G es un conjunto independiente si no hay dos nodos de $I$ conectados mediante un arco de G. El problema trata de hallar el conjunto independiente m\'as grande (el que m\'as nodos tenga) del grafo.
+
+Pero como hemos mencionado antes, nuestro problema ser\'a de decisi\'on, es decir: Dado un grafo G y un $k \in {1,...,N}$ con $N$ siendo el n\'umero de nodos de G, ¿tiene G un conjunto independiente tan grande como k?
+
+Vamos a probar que El problema de los conjuntos independientes (PCI) es NP-Completo, para ello primero probaremos que PCI \cite{HopcroftESP} es un problema NP, y a continuaci\'on partiremos del problema 3SAT como problema NP-Completo y lo reduciremos al PCI.
+
+\begin{dem}
+
+Para empezar, ver que PCI est\'a en NP es sencillo, basta con dado un grafo G y un l\'imite k, elegir k nodos y comprobar si son independientes, si el grafo estuviese definido por matrices de adyacencia esto se realizar\'ia en tiempo $O(n^{2})$.
+
+Ahora para demostrar que es NP-Completo, dada una expresi\'on E de 3SAT construiremos un grafo, y posteriormente probaremos que E es satisfactible si y solo si G tiene un conjunto independiente de tamaño m.
+
+Sea $E = (e_1)(e_2)...(e_m)$ una espresi\'on en la FNC-3\footnote{Forma normal de Chomsky - 3 : conjunciones de disyunciones de 3 literales}. Construiremos a partir de E un grafo G con 3m nodos, los cuales se denominar\'an [i,j] con 1$\leq$ i $\leq $ m y j $\in$ {1,2,3}. El nodo [i,j] representa el j-\'esimo literal de la cl\'ausula $e_i$, cada uno de los [i,1], [i,2], [i,3] corresponde con los literales de las cl\'ausulas $e_i$.
+
+La clave que hay detr\'as de la construcci\'on de G consiste en utilizar arcos para forzas cualquier conjunto independiente con m nodos que represente una forma de satisfacer la expresi\'on E. Para esto usaremos dos ideas clave:
+
+\begin{enumerate}
+
+\item Deseamos asegurarnos de que solo pueden elegirse un nodo que se corresponde con una cl\'ausula determinada. Para ello, colocamos arcos entre [i,1], [1,2], [1,3] $\forall$i $\in$ {1,..,m}.
+
+\item Debemos evitar que se seleccionen nodoso para el conjunto independiente si representan literales que son complementarios, es decir, que si hay dos nodos [$i_1$, $j_1$] y [$i_2$, $j_2$] tales que uno es x y el otro es $\bar{x}$ entonces los uniremos con un arco, de este modo no podremos elegir los dos para un conjunto independiente.
+
+\end{enumerate}
+
+Por \'ultimo el l\'imite k para el grafo G construido por estas dos reglas es m.
+
+\vspace{\baselineskip}
+
+No es dif\'icil ver c\'omo pueden construirse el grafo G y el l\'imite k a partir de la exprexi\'on E en un tiempo que es proporcional al cuadrado de la longitud de E ya que l\'imite k es constante y el grafo se crea en $O(n^2)$, por lo que la conversi\'on de E en G es una reducci\'on en tiempo polin\'omico.
+
+\vspace{\baselineskip}
+
+Ahora solo falta probar que E es satisfactible si y solo si G tiene un conjunto independiente de tamaño m.
+
+\vspace{\baselineskip}
+
+\textbf{Parte si:} En primer lugar, observe que un conjunto independiente no puede incluir dos nodos de la misma cl\'ausula, por tanto si tuviese un conjunto independiente de tamaño m deber\'ia incluir exactamente un nodo de cada cl\'ausula
+
+Adem\'as, el conjunto independiente no puede incluir nodos que correspondan tanto a la variable x como a su negaci\'on $\bar{x}$, ya que siempre tienen un arco entre ellos. Por tanto, el conjunto independiente I de tamaño m proporciona una asignaci\'on  de verdad T que satisface E como sigue: si un nodo que corresponde a una variable x est\'a en I, entonces T(x) = 1; si un nodo que corresponde a una variable neada $\bar{x}$ est\'a en I, entonces seleccionamos T(x) = 0. Si no existe ning\'un nodo en I que se corresponda con x o $\bar{x}$, entonces elegimos T(x) indistintamente, as\'i hemos creado T que satisface E, esto se debe a que cada cla\'usula tiene el nodo correspondiente a uno de los literales de I, y hemos elegido T para que ese literal se haga cierto, y como esto pasa para cada $e_i$ de E, entonces E es verdadero por tanto E satisfactible.
+
+\vspace{\baselineskip}
+
+\textbf{Parte solo si:} Ahora supongamos que E se satisface mediante alguna asignaci\'on de verdad T. Dado que T hace que cada cla\'usula de E sea verdadera, podemos coger un literal $x_i$ de cada cla\'usula tal que T($x_i$) es verdadero, para algunas cl\'ausulas podremos elegir entre 2 o 3 literales, por lo que cogeremos uno de ellos de forma arbitraria. Construimos un conjunto I de m nodos seleccionando el nodo correspondiente a cada $x_i$ seleccionado de cada cl\'ausula.
+
+\vspace{\baselineskip}
+
+Para ver que I es un conjunto independiente veamos que los arcos entre nodos que proceden de la mismo cla\'usula no pueden tener ambos extremos en I, porque solo hemos cogido un nodo de cada cl\'ausula, adem\'as un arco que conecta una variable y su negaci\'on no puede tener ambos extremos en I, ya que solo elegimos para I nodos que correspondan a literales que la asignaci\'on de verdad T haga que tomen el valor verdadero (es decir, que si coges un literal $x_i$ no vas a poder coger $\bar{x_i}$ ya que T($\bar{x_i}$ es falso, por tanto podemos concluir que si E es satisfactible entonces G tiene un conjunto independiente de tamaño m.
+
+Por tanto, existe una reducci\'on en tiempo polin\'omico de 3SAT a PIC, y como 3SAT es NP-Completo\cite{HopcroftESP}, el problema PIC tambi\'en lo es.
+
+\end{dem}
+
+\end{eje}
+
+Ahora usaremos este \'ultimo resultado para probar que otro problema es NP-Completo.
+
+\begin{eje}
+\textbf{El problema CLIQUE}
+\vspace{\baselineskip}
+
+Una clique-k en un grafo G es un conjunto de k nodos de G, tal que existe un arco entre cada dos nodos de la CLIQUE (todos conectados al resto). El problema CLIQUE es: dado un grafo G y una constante k, ¿tiene el grafo G una clique-k?
+
+Nuestra estrategia para probar que este problema es NP-Completo va a consistir en reducirlo desde PCI, esto se debe a que el grafo complementario de un conjunto independiente siempre forma una CLIQUE como veremos a continuaci\'on.
+
+\begin{dem}
+
+Sea G un grafo de tamaño n lo primero que vamos a hacer es construir un grafo G' de forma que si en G hay un conjunto independiente entonces haya una CLIQUE en G'.
+
+Para lograr esto la idea es que un conjunto independiente de nodos no tiene ning\'un arco entre ellos, mientras que en una CLIQUE existe un arco entre cada par de nodos, es decir son lo contrario, por tanto G' va a ser el grafo complementario de G, es decir que si la matriz de adyacencia de G es $M_{n\times n}$ entonces la matriz de adyacencia de G' ser\'a $M'_{n\times n}$ con:
+
+\vspace{\baselineskip}
+
+\begin{center}
+
+$ M'(i,j) = \left \lbrace
+\begin{array}{l l}
+0 & \mbox{si }\mbox{ M(i,j) = 1} \\
+1 & \mbox{si }\mbox{ M(i,j) = 0}
+\end{array}
+\right. $
+
+\end{center}
+
+\vspace{\baselineskip}
+
+Ahora queda ver que que usamos como k' para el problema CLIQUE, y usaremos la k del problema de PCI.
+
+Por \'ultimo veremos que G tiene un conjunto independiente de tamaño mayor que k  si y solo si G' tiene una k'-clique.
+
+\vspace{\baselineskip}
+
+\textbf{Parte si:} Sea H = {$v_1$,...,$v_k$} un conjunto independiente de k nodos entonces eso significa que M(i,j) = 0 $\forall$ i,j $\in$ {1,...,m}, por tanto, M'(i,j) = 1 $\forall$ i,j $\in$ {1,...,k} y por lo tanto hay una k'-clique ya que k = k'.
+
+\vspace{\baselineskip}
+
+\textbf{Parte solo si:} An\'alogo a la parte si pero teniendo en cuenta que M'(i,j) = 1 implica M(i,j) = 0.
+
+\vspace{\baselineskip}
+
+Y como construir G' se hace en tiempo cuadr\'atico respecto del tamaño del grafo (construir aristas se tarda O($n^2$)) entonces tenemos una reducci\'on polin\'omica de PCI al problema CLIQUE.
+
+\end{dem}
+
+\end{eje}
+
+\section{Clases de aproximaci\'on}
+
+\newpage
+
+\begin{thebibliography}{0}
+  \bibitem{HopcroftESP} John E. Hopcroft, Rajeev Motwani, Jeffrey D. Ullman. Teor\'ia de aut\'omatas, lenguajes y computaci\'on.
+  \bibitem{AroraBarak} Sanjeev Arora, Boaz Barak. Computational Complexity, A Modern Approach.
+  \bibitem{approx_core} Vangelis Th. PASCHOS. An Overview on Polynomal Approximation of NP-Hard Problems
+  \bibitem{aks_complexity} Alberto Bedodi, Frencesco Pappalardi. Primality Tests in Polynomial Time
+  \bibitem{knapsack1} M. X. Goemans, The Knapsack Problem and Fully Polynomial Time Approximation Schemes (FPTAS).
+\end{thebibliography}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
