@@ -4,12 +4,18 @@
 \usepackage{lmodern}
 \usepackage[spanish]{babel}
 \usepackage{graphicx}
+%\usepackage{kpfonts}
+\usepackage{wrapfig}
+\usepackage{xcolor}
 \usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
 \newtheorem{defi}{Definici\'on}[section]
 \newtheorem{eje}{Ejemplo}[section]
 \newtheorem{obs}{Observaci\'on}[section]
 \newtheorem{teo}{Teorema}[section]
 \newtheorem*{dem}{\textbf{Demostraci\'on}}
+\newtheorem*{nota}{Notaci\'on}
 
 \graphicspath{ {images/} }
 
@@ -23,6 +29,7 @@
   {\bfseries\LARGE Universidad Complutense de Madrid \par}
   \vspace{1cm}
   {\scshape\Large Facultad de Matemáticas \par}
+  {\scshape\Large Grado en Matem\'aticas \par}
   \vspace{2cm}
   {\scshape\Huge Estudio de Complejidad y aproximabilidad \par}
   \vspace{2cm}
@@ -40,35 +47,39 @@
 
 \newpage
 
-\section{Motivaci\'on.}
+\section{Motivaci\'on.}\label{sec:motivacion}
 
-El hecho de encontrar una soluci\'on \'otima para un problema NP-Duro con un algoritmo que tarde un tiempo polin\'omico parezca muy improbable ha conseguido que varios investigadores y profesionales de diversos servicios intenten resolver estos problemas con m\'etodos heur\'istios, es decir, encontrar una soluci\'on que se ``acerque'' a la \'optima pero que tenga un tiempo mucho m\'as razonable.
+El hecho de que encontrar una soluci\'on \'optima para un problema NP-Duro con un algoritmo que tarde un tiempo polin\'omico parezca muy improbable ha conseguido que varios investigadores y profesionales de diversos servicios intenten resolver estos problemas con m\'etodos heur\'isticos, es decir, encontrar una soluci\'on que se ``acerque'' a la \'optima pero que tenga un tiempo mucho m\'as razonable.
 
-Dentro de los m\'etodos heur\'isticos para resolver problemas NP-Duros, los algoritmos de aproximaci\'on polin\'omicos trantan de resolver un problema NP-Duro en tiempo polin\'omico obteniendo una soluci\'on que estar\'a (bajo cierto criterio) tan cerca de la \'optima como sea posible.
+Dentro de los m\'etodos heur\'isticos para resolver problemas NP-Duros, los algoritmos de aproximaci\'on polin\'omicos tratan de resolver un problema NP-Duro en tiempo polin\'omico obteniendo una soluci\'on que estar\'a (bajo cierto criterio) tan cerca de la \'optima como sea posible.
 
-Para ver esto primero introducieremos brevemente la teor\'ia de la intratabilidad, hablando de qu\'e son los problemas P, NP, NP-Completos, qu\'e son las reducciones polin\'omicas y veremos algunos problemas espec\'ificos, a continuaci\'on describiremos cuales son las diferentes clases de aproximaci\'on y hablaremos sobre los dos principales paradigmas que hay en esta, clasificaremos varios problemas importantes de grafos y optimizaci\'on como el problema de la mochila o el problema del viajante, y por \'ultimo veremos como usar las reducciones polin\'omicas en las clases de aproximaci\'on \cite{approx_core} 
+Para ver esto primero introduciremos brevemente la teor\'ia de la intratabilidad, hablando de qu\'e son los problemas P, NP, NP-Completos, qu\'e son las reducciones polin\'omicas y veremos algunos problemas espec\'ificos. A continuaci\'on describiremos cu\'ales son las diferentes clases de aproximaci\'on y hablaremos sobre los dos principales paradigmas que hay en esta. Clasificaremos varios problemas importantes de grafos y optimizaci\'on como el problema de la mochila o el problema del viajante, y por \'ultimo veremos c\'omo usar las reducciones polin\'omicas en las clases de aproximaci\'on \cite{approx_core}
 
 \newpage
 
 \section{Preliminares.}
+\label{sec:preliminares}
 
-En esta secci\'on vamos a presentar las clases P, NP y NP-completos, son 3
-clases principales de problemas y son la base de la teor\'ia de complejidad
-y necesarias para hablar sobre las clases de aproximaci\'on.
+La bibliograf\'ia para esta secci\'on es: \cite{aks_complexity}, \cite{quicksort}, \cite{BFS}, \cite{AroraBarak}, \cite{HopcroftESP} y \cite{approx_core}.
+
+\vspace{0.3cm}
+
+En esta secci\'on vamos a presentar las clases de problemas P, NP y NP-C (la clase de problemas que son NP-Completos)
+y posteriormente ser\'an necesarias para hablar sobre las clases de aproximaci\'on.
 
 \begin{obs}
 
-Un detalle importante es que para las clases P y NP debemos tratar con problemas de decisi\'on, es decir, problemas de si o no, pero a la hora de hablar de estos problemas los mencionaremos como un problema de optimizaci\'on abusando un poco de notaci\'on, ahora bien, para traducir esos problemas de optimizaci\'on en problemas de decisi\'on lo que tenemos que hacer es preguntarnos si para cierto k, es posible obtener un beneficio $\geq$k
+Un detalle importante es que para las clases P y NP debemos tratar con problemas de decisi\'on, es decir, problemas de s{\'\i} o no, pero a la hora de hablar de estos problemas los mencionaremos como un problema de optimizaci\'on abusando un poco de notaci\'on. Ahora bien, para traducir esos problemas de optimizaci\'on en problemas de decisi\'on lo que tenemos que hacer es preguntarnos si para cierto k, es posible obtener un beneficio $\geq$k (si el problema era de maximizaci\'on)
 
 \end{obs}
 
-Para definir P y NP es necesario saber que es la \textsl{complejidad temporal:} $T(n)$.
+Para definir P y NP es necesario saber qu\'e es la \textsl{complejidad temporal:} $T(n)$.
 
 \begin{defi}
 
 Decimos que un algoritmo tiene \textbf{complejidad temporal}
 $T(n)$ si siempre que reciba una entrada de tamaño n \'este se
-ejecute como m\'aximo en $T(n)$ movimientos.
+ejecuta como m\'aximo en $T(n)$ movimientos.
 
 \end{defi}
 
@@ -82,12 +93,12 @@ Decimos que un problema pertenece a \textbf{P} cuando existe una m\'aquina de Tu
 
 \begin{eje}
 
-Dentro de P tenemos tenemos varios problemas como:
+Dentro de P tenemos varios problemas como:
 
 \begin{itemize}
-  \item El problema de primalidad respecto del n\'umero de cifras, se resuelve mediante el algoritmo de AKS y su complejidad algor\'itmica es de $T(n) = n^{21/2}$ \cite{aks_complexity} con respecto al n\'umero de cifras del n\'umero
-  \item El problema de ordenaci\'on de un vector de n elementos de enteros se puede resolver mediante el algoritmo de quicksort con complejidad algor\'itmica de $T(n) = n^{2}$.
-  \item El problema de encontrar el camino m\'as corto entre dos v\'ertices de un grafo se puede hallar mediante el algoritmo de BFS, y su complejidad algor\'itmica es de $T(n) = n^{2}$.
+  \item El problema de primalidad respecto del n\'umero de cifras, se resuelve mediante el algoritmo de AKS y su complejidad algor\'itmica es de $T(n) = n^{21/2}$ \cite{aks_complexity} con respecto al n\'umero de cifras del n\'umero.
+  \item El problema de ordenaci\'on de un vector de n elementos de enteros se puede resolver mediante el algoritmo de quicksort \cite{quicksort} con complejidad algor\'itmica de $T(n) = n^{2}$.
+  \item El problema de encontrar el camino m\'as corto entre dos v\'ertices de un grafo se puede hallar mediante el algoritmo BFS \cite{BFS}, y su complejidad algor\'itmica es de $T(n) = n^{2}$.
 \end{itemize}
 
 \end{eje}
@@ -102,13 +113,13 @@ Decimos que un problema pertenece a \textbf{NP} cuando existe una m\'aquina de T
 
 \begin{obs}
 
-Algo a destacar es que con esta definici\'on cualquier problema que pertenezca a P tambi\'en pertenece a NP, ya que una m\'aquina de Turing determinista es una m\'aquina de Turing no determinista que no tiene opci\'on a elegir entre varios movimientos, por tanto $P \subseteq NP$.
+Algo a destacar es que con esta definici\'on  cualquier problema que pertenezca a P tambi\'en pertenece a NP, ya que una m\'aquina de Turing determinista es una m\'aquina de Turing no determinista que no tiene opci\'on a elegir entre varios movimientos, por tanto $P \subseteq NP$.
 
 \end{obs}
 
 \begin{obs}
 
-Otra forma de ver los problemas NP es que dada una posible soluci\'on x, podemos encontrar en tiempo polin\'omico si dicha x satisface los requisitos pedidos al problema previo.
+Otra forma de ver los problemas NP es que dada una posible soluci\'on x, podemos encontrar en tiempo polin\'omico si dicha x satisface los requisitos pedidos al problema de decisi\'on previo.
 
 \end {obs}
 
@@ -118,10 +129,10 @@ Algunos problemas que pertenecen a NP son:
 
 \begin{itemize}
 
-  \item \textbf{El problema de la mochila}, en este problema se te da una mochila de tamaño $B \in Z\textsuperscript{+}$ y un conjunto S = \{a\textsubscript{1},...,a\textsubscript{n}\} de objetos con sus correspondientes precios s(a\textsubscript{i}) $\in$ Z\textsuperscript{+} y tamaños p(a\textsubscript{i}) $\in$ Z\textsuperscript{+}. El objetivo es encontrar el subconjunto $S^{*}$ de objetos tal que el tamaño de la suma de objetos de $S^{*}$ no sobrepase B y obteniendo el mayor beneficio con ellos \cite{knapsack1}.
-  \item \textbf{El problema Min TSP}, dado un grafo completo\footnote{Un grafo completo es aquel en el que para cada par de v\'ertices existe al menos una arista entre ellos} de n v\'ertices, $K_{n}$, con valores positivos en sus aristas, MIN TSP consiste en determinar el camino Hamiltoniano\footnote{Es aquel camino que recorre todos los v\'ertices de un grafo sin repetir ninguno} de menor coste \cite{approx_core}
-  \item \textbf{El problema CLIQUE}, que trata de encontrar el mayor subgrafo G' dentro de un grafo G en el que todos los v\'ertices de G' est\'en conectados entre ellos por aristas
-  
+  \item \textbf{El problema de la mochila}, en este problema se tiene una mochila de tamaño $B \in Z\textsuperscript{+}$ y un conjunto S = \{a\textsubscript{1},...,a\textsubscript{n}\} de objetos con sus correspondientes precios s(a\textsubscript{i}) $\in$ Z\textsuperscript{+} y tamaños p(a\textsubscript{i}) $\in$ Z\textsuperscript{+}. El objetivo es encontrar el subconjunto $S^{*}$ de objetos tal que el tamaño de la suma de objetos de $S^{*}$ no sobrepase B y obteniendo el mayor beneficio con ellos \cite{knapsack1}.
+  \item \textbf{El problema Min TSP}, dado un grafo completo\footnote{Un grafo completo es aquel en el que para cada par de v\'ertices existe al menos una arista entre ellos.} de n v\'ertices, $K_{n}$, con valores positivos en sus aristas, MIN TSP consiste en determinar el ciclo Hamiltoniano\footnote{Es aquel ciclo que recorre todos los v\'ertices de un grafo sin repetir ninguno y finalmente vuelve al inicial.} de menor coste \cite{approx_core}.
+  \item \textbf{El problema CLIQUE}, que trata de encontrar el mayor subgrafo G' dentro de un grafo G en el que todos los v\'ertices de G' est\'en conectados entre ellos por aristas.
+
 \end{itemize}
 
 \end{eje}
@@ -138,12 +149,12 @@ $P = NP$ entonces estos problemas se resolver\'ian en tiempo polin\'omico.
 De las tres clases que hemos visto, \'esta ser\'a la que m\'as nos va a
 interesar, ya que las clases de aproximaci\'on estar\'an contenidas aqu\'i.
 
-Pero para definir que son los problemas NP-Completos primero necesitamos
-saber que son las reducciones polin\'omicas y los problemas NP-Duros.
+Pero para definir qu\'e son los problemas NP-Completos primero necesitamos
+saber qu\'e son las reducciones polin\'omicas y los problemas NP-Duros.
 
 \begin{defi}
 
-Sean $P_{1}$ y $P_{2}$ dos problemas, se denomina \textbf{reducci\'on de $P_{1}$ a $P_{2}$ en tiempo polin\'omino} a aquella transformaci\'on del problema $P_{1}$ en el problema $P_{2}$ y adem\'as transforme cualquier entrada de $P_{1}$ en una entrada de $P_{2}$ todo en tiempo polin\'omico de modo que si resolvemos el problema $P_{2}$ lo \'unico que tendr\'iamos que hacer para resolver $P_{1}$ es transformarlo en $P_{2}$ y resolverlo.
+Sean $P_{1}$ y $P_{2}$ dos problemas, se denomina \textbf{reducci\'on de $P_{1}$ a $P_{2}$ en tiempo polin\'omino} a aquella transformaci\'on del problema $P_{1}$ en el problema $P_{2}$ que adem\'as transforme cualquier entrada de $P_{1}$ en una entrada de $P_{2}$ en tiempo polin\'omico  y que el tamaño de la nueva entrada sea polin\'omico con respecto de la entrada de $P_1$ de modo que si resolvemos el problema $P_2$ lo \'unico que tendr\'iamos que hacer para resolver $P_1$ es transformarlo en $P_2$ y resolverlo.
 
 \end{defi}
 
@@ -152,21 +163,28 @@ que una cantidad importante de problemas son NP-Completos sin necesidad
 de hacerlo directamente, nos basta con tener un problema NP-Completo para
 poder probar el resto.
 
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.6]{reduccion1}
+\caption{Esquema de una reducci\'on}
+\label{reduccion1}
+\end{figure}
+
 \begin{defi}
 
 Un problema P es \textbf{NP-Duro} si para todo problema P' $\in$ NP existe una reducci\'on en tiempo polin\'omico de P' a P.
 
 \end{defi}
 
-Finalmente.
+Finalmente, tenemos la siguiente definici\'on:
 
 \begin{defi}
 
-Un problema es \textbf{NP-Completo} si es NP-Duro y adem\'as pertenece a NP
+Un problema es \textbf{NP-Completo} si es NP-Duro y adem\'as pertenece a NP.
 
 \end{defi}
 
-Estos problemas son increiblemente importantes en la teor\'ia de la intratabilidad ya que son aquellos que parecen m\'as improbables de pertenecer a P que el resto
+Estos problemas son increiblemente importantes en la teor\'ia de la intratabilidad ya que son aquellos que parecen m\'as improbables de pertenecer a P que el resto.
 
 \begin{eje}
 
@@ -174,10 +192,10 @@ Algunos ejemplos de problemas NP-Completos son:
 
 \begin{itemize}
 
-  \item \textbf{El problema de Satisfactibilidad (SAT)}, dado una formula de l\'ogica (proposicional o de primer orden), consiste en ver si \'esta es satisfactible o no. Este es el primer problema que se prob\'o ser Np-Completo por el Teorema de Cook \cite{AroraBarak}.
-  \item \textbf{El problema de los conjuntos independientes (PCI)}, sea un grafo G no dirigido. Trata de hallar el conjunto independiente\footnote{Es aquel t.q ninguna de sus v\'ertices est\'an conectados entre si} maximal de un grafo \cite{approx_core}.
-  \item \textbf{El problema de la mochila (Knapsack)}\footnote{Definido en el Ejemplo 2.2}.
-  
+  \item \textbf{El problema de Satisfactibilidad (SAT)}, dada una formula de l\'ogica (proposicional o de primer orden), consiste en ver si \'esta es satisfactible o no. Este es el primer problema que se prob\'o ser NP-Completo por el Teorema de Cook \cite{AroraBarak}.
+  \item \textbf{El problema de los conjuntos independientes (PCI)}, sea un grafo G no dirigido. Trata de hallar el conjunto independiente\footnote{Es aquel t.q ninguno de sus v\'ertices est\'an conectados entre si.} maximal de un grafo \cite{approx_core}.
+  \item \textbf{El problema de la mochila (Knapsack)} Definido en el Ejemplo 2.2.
+
 \end{itemize}
 
 \end{eje}
@@ -196,27 +214,29 @@ Supongamos que S es un problema NP-Completo y $S \in P$. Entonces, sea F $\in$ N
 
 \end{teo}
 
-\subsection{Reducciones polin\'omicas.}
+\subsection{Reducciones polin\'omicas.}\label{red_poli}
+\label{reduc1}
 
-Anteriormente hemos mencionado que el problema SAT\footnote{El problema de Satisfactibilidad} fue el primer problema que se prob\'o pertenec\'ia a la clase NP-Completo, \'esto es muy importante debido a que es muy dif\'icil probar que todo problema en NP se puede reducir a otro. Aqu\'i entran en juego las reducciones polin\'omicas que nos ayudaran enormemente a demostrar que algunos problemas son NP-Completos sin necesidad de reducir todo problema de NP.
+Anteriormente hemos mencionado que el problema SAT\footnote{El problema de Satisfactibilidad.} fue el primer problema que se prob\'o ser NP-Completo. Esto es muy importante debido a que es muy dif\'icil probar que todo problema en NP se puede reducir a otro. Aqu\'i entran en juego las reducciones polin\'omicas que nos ayudar\'an enormemente a demostrar que algunos problemas son NP-Completos sin necesidad de reducir todo problema de NP.
 
 En esta secci\'on veremos un resultado muy importante para ayudarnos a probar que los problemas son NP-Completos y veremos ejemplos de c\'omo hacerlo.
 
 \begin{teo}
 
-Si $P_{1}$ es NP-Completo y existe una reducci\'on en tiempo polin\'omico de $P_{1}$ a $P_2$ entonces $P_2$ es NP-Completo.
+Si $P_{1}$ es NP-Duro y existe una reducci\'on en tiempo polin\'omico de $P_{1}$ a $P_2$ entonces $P_2$ es NP-Duro.
 
 \begin{dem}
 
-Tenemos que demostrar que todo lenguaje $L$ de $NP$ se reduce en tiempo polin\'omico a $P_2$. Sabemos que existe una reducci\'on en tiempo polin\'omico de L a $P_2$. Por tanto, una cadena $w$ de $L$ de longitud $n$ se convierte en una cadena $x$ de $P_1$ de longitud m\'axima $p(n)$.
+Tenemos que demostrar que todo lenguaje $L$ de $NP$ se reduce en tiempo polin\'omico a $P_2$. Sabemos que existe una reducci\'on en tiempo polin\'omico de L a $P_1$. Por tanto, una cadena $w$ de $L$ de longitud $n$ se convierte en una cadena $x$ de $P_1$ de longitud m\'axima $p(n)$.
 
-Adem\'as sabemos que existe una reducci\'on en tiempo polin\'omico de $P_1$ a $P_2$ que tarda $q(m)$. Entonces esta reducci\'on transforma x en cierta cadena $y$ de $P_2$ tardando un tiempo m\'aximo de $q(p(n))$, por tanto la transformaci\'on de $w$ en $y$ tarda un tiempo m\'aximo de $p(n) + q(p(n))$, por lo que L es reducible en tiempo polin\'omico a $P_2$, y como L puede ser cualquier lenguaje de $NP$, tenemos que $P_2$ es NP-Completo.
+Adem\'as, sabemos que existe una reducci\'on en tiempo polin\'omico de $P_1$ a $P_2$ que tarda $q(m)$. Entonces esta reducci\'on transforma x en cierta cadena $y$ de $P_2$ tardando un tiempo m\'aximo de $q(p(n))$, por tanto la transformaci\'on de $w$ en $y$ tarda un tiempo m\'aximo de $p(n) + q(p(n))$, por lo que L es reducible en tiempo polin\'omico a $P_2$, y como L puede ser cualquier lenguaje de $NP$, tenemos que $P_2$ es NP-Duro.
 
 \end{dem}
 
 \end{teo}
 
-Este resultado es increiblemente \'util, ya que podemos probar que un problema es NP-Completo reduci\'endolo de alg\'un otro que ya sepamos que es NP-Completo.
+Este resultado es increiblemente \'util, ya que podemos probar que un problema es NP-Duro reduci\'endolo de alg\'un otro que ya sepamos que es NP-Duro.
+Para que tambi\'en sea NP-completo, bastar\'a comprobar que adem\'as pertenece a NP.
 
 Ahora veremos algunos ejemplos de como usar este resultado para probar que un problema es NP-Completo.
 
@@ -229,31 +249,38 @@ Sea G un grafo no dirigido. Decimos que un subconjunto $I$ de los nodos de G es 
 
 Pero como hemos mencionado antes, nuestro problema ser\'a de decisi\'on, es decir: Dado un grafo G y un $k \in {1,...,N}$ con $N$ siendo el n\'umero de nodos de G, ¿tiene G un conjunto independiente tan grande como k?
 
-Vamos a probar que El problema de los conjuntos independientes (PCI) es NP-Completo, para ello primero probaremos que PCI \cite{HopcroftESP} es un problema NP, y a continuaci\'on partiremos del problema 3SAT como problema NP-Completo y lo reduciremos al PCI.
+Vamos a probar que El problema de los conjuntos independientes (PCI) es NP-Completo, para ello primero probaremos que PCI\cite{HopcroftESP} es un problema NP, y a continuaci\'on partiremos del problema 3SAT como problema NP-Completo y lo reduciremos al PCI.
 
 \begin{dem}
 
-Para empezar, ver que PCI est\'a en NP es sencillo, basta con dado un grafo G y un l\'imite k, elegir k nodos y comprobar si son independientes, si el grafo estuviese definido por matrices de adyacencia esto se realizar\'ia en tiempo $O(n^{2})$.
+Para empezar, ver que PCI est\'a en NP es sencillo, dado un grafo G y un l\'imite k, basta con elegir k nodos de G y comprobar si son independientes, si el grafo estuviese definido por matrices de adyacencia esto se realizar\'ia en tiempo $O(n^{2})$.
 
-Ahora para demostrar que es NP-Completo, dada una expresi\'on E de 3SAT construiremos un grafo, y posteriormente probaremos que E es satisfactible si y solo si G tiene un conjunto independiente de tamaño m.
+Ahora, para demostrar que es NP-Completo, dada una expresi\'on E de 3SAT con m cl\'ausulas construiremos un grafo G (la construcci\'on del grafo depender\'a de E), y posteriormente probaremos que E es satisfactible si y solo si G tiene un conjunto independiente de tamaño m.
 
-Sea $E = (e_1)(e_2)...(e_m)$ una espresi\'on en la FNC-3\footnote{Forma normal de Chomsky - 3 : conjunciones de disyunciones de 3 literales}. Construiremos a partir de E un grafo G con 3m nodos, los cuales se denominar\'an [i,j] con 1$\leq$ i $\leq $ m y j $\in$ {1,2,3}. El nodo [i,j] representa el j-\'esimo literal de la cl\'ausula $e_i$, cada uno de los [i,1], [i,2], [i,3] corresponde con los literales de las cl\'ausulas $e_i$.
+Sea $E = (e_1)(e_2)...(e_m)$ una espresi\'on en la FNC-3\footnote{Forma normal de Chomsky - 3: conjunciones de disyunciones de 3 literales.}. Construiremos a partir de E un grafo G con 3m nodos, los cuales se denominar\'an [i,j] con 1$\leq$ i $\leq $ m y j $\in$ \{1,2,3\}. El nodo [i,j] representa el j-\'esimo literal de la cl\'ausula $e_i$, cada uno de los [i,1], [i,2], [i,3] corresponde con los literales de las cl\'ausulas $e_i$.
 
-La clave que hay detr\'as de la construcci\'on de G consiste en utilizar arcos para forzas cualquier conjunto independiente con m nodos que represente una forma de satisfacer la expresi\'on E. Para esto usaremos dos ideas clave:
+La clave que hay detr\'as de la construcci\'on de G consiste en utilizar arcos para forzar cualquier conjunto independiente con m nodos que represente una forma de satisfacer la expresi\'on E. Para esto usaremos dos ideas clave:
 
 \begin{enumerate}
 
 \item Deseamos asegurarnos de que solo pueden elegirse un nodo que se corresponde con una cl\'ausula determinada. Para ello, colocamos arcos entre [i,1], [1,2], [1,3] $\forall$i $\in$ {1,..,m}.
 
-\item Debemos evitar que se seleccionen nodoso para el conjunto independiente si representan literales que son complementarios, es decir, que si hay dos nodos [$i_1$, $j_1$] y [$i_2$, $j_2$] tales que uno es x y el otro es $\bar{x}$ entonces los uniremos con un arco, de este modo no podremos elegir los dos para un conjunto independiente.
+\item Debemos evitar que se seleccionen nodos para el conjunto independiente si representan literales que son complementarios, es decir, que si hay dos nodos [$i_1$, $j_1$] y [$i_2$, $j_2$] tales que uno es x y el otro es $\bar{x}$ entonces los uniremos con un arco, de este modo no podremos elegir los dos para un conjunto independiente.
 
 \end{enumerate}
 
-Por \'ultimo el l\'imite k para el grafo G construido por estas dos reglas es m.
+\begin{figure}[h]
+\centering
+\includegraphics[width=10cm, height=6cm]{PCI_red}
+\caption{Ejemplo de grafo para la expresi\'on booleana ($x_1$ + $x_2$ + $x_3$)($\bar{x_1}$ + $x_2$ + $x_4$)($\bar{x_2}$ + $x_3$ + $x_5$)($\bar{x_3}$ + $\bar{x_4}$ + $\bar{x_5}$) donde podemos apreciar que el PCI es el conjunto formado por los v\'ertices [1,1], [2,2], [3,2] y [4,2]}
+\label{PCI_red}
+\end{figure}
+
+Por \'ultimo, el l\'imite k para el grafo G construido por estas dos reglas es m.
 
 \vspace{\baselineskip}
 
-No es dif\'icil ver c\'omo pueden construirse el grafo G y el l\'imite k a partir de la exprexi\'on E en un tiempo que es proporcional al cuadrado de la longitud de E ya que l\'imite k es constante y el grafo se crea en $O(n^2)$, por lo que la conversi\'on de E en G es una reducci\'on en tiempo polin\'omico.
+No es dif\'icil ver c\'omo pueden construirse el grafo G y el l\'imite k a partir de la exprexi\'on E en un tiempo que es proporcional al cuadrado de la longitud de E, ya que el l\'imite k es constante y el grafo se crea en $O(n^2)$, por lo que la conversi\'on de E en G es una reducci\'on en tiempo polin\'omico.
 
 \vspace{\baselineskip}
 
@@ -263,17 +290,17 @@ Ahora solo falta probar que E es satisfactible si y solo si G tiene un conjunto 
 
 \textbf{Parte si:} En primer lugar, observe que un conjunto independiente no puede incluir dos nodos de la misma cl\'ausula, por tanto si tuviese un conjunto independiente de tamaño m deber\'ia incluir exactamente un nodo de cada cl\'ausula
 
-Adem\'as, el conjunto independiente no puede incluir nodos que correspondan tanto a la variable x como a su negaci\'on $\bar{x}$, ya que siempre tienen un arco entre ellos. Por tanto, el conjunto independiente I de tamaño m proporciona una asignaci\'on  de verdad T que satisface E como sigue: si un nodo que corresponde a una variable x est\'a en I, entonces T(x) = 1; si un nodo que corresponde a una variable neada $\bar{x}$ est\'a en I, entonces seleccionamos T(x) = 0. Si no existe ning\'un nodo en I que se corresponda con x o $\bar{x}$, entonces elegimos T(x) indistintamente, as\'i hemos creado T que satisface E, esto se debe a que cada cla\'usula tiene el nodo correspondiente a uno de los literales de I, y hemos elegido T para que ese literal se haga cierto, y como esto pasa para cada $e_i$ de E, entonces E es verdadero por tanto E satisfactible.
+Adem\'as, el conjunto independiente no puede incluir nodos que correspondan tanto a la variable x como a su negaci\'on $\bar{x}$, ya que siempre tienen un arco entre ellos. Por tanto, el conjunto independiente I de tamaño m proporciona una asignaci\'on  de verdad T que satisface E como sigue: si un nodo que corresponde a una variable x est\'a en I, entonces T(x) = 1; si un nodo que corresponde a una variable negada $\bar{x}$ est\'a en I, entonces seleccionamos T(x) = 0. Si no existe ning\'un nodo en I que se corresponda con x o $\bar{x}$, entonces elegimos T(x) indistintamente, as\'i hemos creado T que satisface E, esto se debe a que cada cl\'ausula tiene el nodo correspondiente a uno de los literales de I, y hemos elegido T para que ese literal se haga cierto, y como esto pasa para cada $e_i$ de E, entonces E es verdadero y por tanto E satisfactible.
 
 \vspace{\baselineskip}
 
-\textbf{Parte solo si:} Ahora supongamos que E se satisface mediante alguna asignaci\'on de verdad T. Dado que T hace que cada cla\'usula de E sea verdadera, podemos coger un literal $x_i$ de cada cla\'usula tal que T($x_i$) es verdadero, para algunas cl\'ausulas podremos elegir entre 2 o 3 literales, por lo que cogeremos uno de ellos de forma arbitraria. Construimos un conjunto I de m nodos seleccionando el nodo correspondiente a cada $x_i$ seleccionado de cada cl\'ausula.
+\textbf{Parte solo si:} Ahora supongamos que E se satisface mediante alguna asignaci\'on de verdad T. Dado que T hace que cada cl\'ausula de E sea verdadera, podemos coger un literal $x_i$ de cada cl\'ausula tal que T($x_i$) es verdadero, para algunas cl\'ausulas podremos elegir entre 2 o 3 literales, por lo que cogeremos uno de ellos de forma arbitraria. Construimos un conjunto I de m nodos seleccionando el nodo correspondiente a cada $x_i$ seleccionado de cada cl\'ausula.
 
 \vspace{\baselineskip}
 
-Para ver que I es un conjunto independiente veamos que los arcos entre nodos que proceden de la mismo cla\'usula no pueden tener ambos extremos en I, porque solo hemos cogido un nodo de cada cl\'ausula, adem\'as un arco que conecta una variable y su negaci\'on no puede tener ambos extremos en I, ya que solo elegimos para I nodos que correspondan a literales que la asignaci\'on de verdad T haga que tomen el valor verdadero (es decir, que si coges un literal $x_i$ no vas a poder coger $\bar{x_i}$ ya que T($\bar{x_i}$ es falso, por tanto podemos concluir que si E es satisfactible entonces G tiene un conjunto independiente de tamaño m.
+Para ver que I es un conjunto independiente veamos que los arcos entre nodos que proceden de la misma cl\'ausula no pueden tener ambos extremos en I, porque solo hemos cogido un nodo de cada cl\'ausula. Adem\'as, un arco que conecta una variable y su negaci\'on no puede tener ambos extremos en I, ya que solo elegimos para I nodos que correspondan a literales que la asignaci\'on de verdad T haga que tomen el valor verdadero, es decir, que si se coge un literal $x_i$ no se va a poder coger $\bar{x_i}$, ya que T($\bar{x_i}$) es falso. Por tanto, podemos concluir que si E es satisfactible entonces G tiene un conjunto independiente de tamaño m.
 
-Por tanto, existe una reducci\'on en tiempo polin\'omico de 3SAT a PIC, y como 3SAT es NP-Completo\cite{HopcroftESP}, el problema PIC tambi\'en lo es.
+Por tanto, existe una reducci\'on en tiempo polin\'omico de 3SAT a PCI, y como 3SAT es NP-Completo\cite{HopcroftESP}, el problema PCI tambi\'en lo es.
 
 \end{dem}
 
@@ -285,15 +312,15 @@ Ahora usaremos este \'ultimo resultado para probar que otro problema es NP-Compl
 \textbf{El problema CLIQUE}
 \vspace{\baselineskip}
 
-Una clique-k en un grafo G es un conjunto de k nodos de G, tal que existe un arco entre cada dos nodos de la CLIQUE (todos conectados al resto). El problema CLIQUE es: dado un grafo G y una constante k, ¿tiene el grafo G una clique-k?
+Una clique-k de un grafo G es un subconjunto de k nodos de G, tal que existe un arco entre cada par de nodos distintos del subconjunto. El problema CLIQUE es: dado un grafo G y una constante k, ¿tiene el grafo G una clique-k?
 
 Nuestra estrategia para probar que este problema es NP-Completo va a consistir en reducirlo desde PCI, esto se debe a que el grafo complementario de un conjunto independiente siempre forma una CLIQUE como veremos a continuaci\'on.
 
 \begin{dem}
 
-Sea G un grafo de tamaño n lo primero que vamos a hacer es construir un grafo G' de forma que si en G hay un conjunto independiente entonces haya una CLIQUE en G'.
+Sea G un grafo de tamaño n. Lo primero que vamos a hacer es construir un grafo G' de forma que si en G hay un conjunto independiente entonces haya una CLIQUE en G'.
 
-Para lograr esto la idea es que un conjunto independiente de nodos no tiene ning\'un arco entre ellos, mientras que en una CLIQUE existe un arco entre cada par de nodos, es decir son lo contrario, por tanto G' va a ser el grafo complementario de G, es decir que si la matriz de adyacencia de G es $M_{n\times n}$ entonces la matriz de adyacencia de G' ser\'a $M'_{n\times n}$ con:
+Para lograr esto la idea es que un conjunto independiente de nodos no tiene ning\'un arco entre ellos, mientras que en una CLIQUE existe un arco entre cada par de nodos, es decir, son lo contrario. Por tanto, G' va a ser el grafo complementario de G, es decir, si la matriz de adyacencia de G es $M_{n\times n}$ entonces la matriz de adyacencia de G' ser\'a $M'_{n\times n}$ con:
 
 \vspace{\baselineskip}
 
@@ -302,15 +329,23 @@ Para lograr esto la idea es que un conjunto independiente de nodos no tiene ning
 $ M'(i,j) = \left \lbrace
 \begin{array}{l l}
 0 & \mbox{si }\mbox{ M(i,j) = 1} \\
-1 & \mbox{si }\mbox{ M(i,j) = 0}
+1 & \mbox{si }\mbox{ M(i,j) = 0} \\
+0 & \mbox{si }\mbox{ i = j}
 \end{array}
 \right. $
 
 \end{center}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=13cm, height=5cm]{CLIQUE4}
+\caption{Ejemplo de reducción de un grafo G (izquierda) a un grafo G' (derecha) que nos muestra c\'omo se transforma el grafo para hallar una CLIQUE (vértices 1, 4 y 5)}
+\label{CLIQUE}
+\end{figure}
+
 \vspace{\baselineskip}
 
-Ahora queda ver que que usamos como k' para el problema CLIQUE, y usaremos la k del problema de PCI.
+Ahora queda ver qu\'e usamos como k' para el problema CLIQUE, y usaremos la k del PCI.
 
 Por \'ultimo veremos que G tiene un conjunto independiente de tamaño mayor que k  si y solo si G' tiene una k'-clique.
 
@@ -324,33 +359,809 @@ Por \'ultimo veremos que G tiene un conjunto independiente de tamaño mayor que 
 
 \vspace{\baselineskip}
 
-Y como construir G' se hace en tiempo cuadr\'atico respecto del tamaño del grafo (construir aristas se tarda O($n^2$)) entonces tenemos una reducci\'on polin\'omica de PCI al problema CLIQUE.
+Y como construir G' se hace en tiempo cuadr\'atico respecto del tamaño del grafo (para construir aristas tardamos O($n^2$)) entonces tenemos una reducci\'on polin\'omica de PCI al problema CLIQUE.
 
 \end{dem}
 
 \end{eje}
 
-\section{Clases de aproximaci\'on}
+\newpage
+
+\section{Clases de aproximaci\'on y jerarqu\'ia.}
+\label{sec:clases}
+
+La bibliograf\'ia para esta secci\'on es: \cite{MAX_CLIQ_INA} y \cite{approx_core}. 
+
+\vspace{0.3cm}
+
+Como se coment\'o en el apartado \ref{sec:motivacion}, la mayor\'ia de expertos en el \'area de complejidad computacional creen que es imposible encontrar un algoritmo polin\'omico para encontrar una soluci\'on \'optima de los problemas NP-Duros, por ello, en la pr\'actica, para muchos de estos problemas bastar\'a con encontrar una soluci\'on que se acerque a la \'optima.
+
+Aqu\'i entran las clases de aproximaci\'on, que nos ayudar\'an a clasificar diferentes problemas en cuan \textit{bien} se pueden aproximar.
+
+\subsection{Preliminares}
+
+Lo primero que tenemos que tener en cuenta, es que hasta ahora hemos tratado con problemas de decisi\'on los cuales no son aproximables ya que la salida de estos es \textit{s\'\i} ó \textit{no}, por tanto necesitamos una nueva forma de tratar la clase NP:
+
+Trataremos con la clase NPO, que informalmente es la clase de los problemas de optimizaci\'on cuyo problema equivalente de decisi\'on est\'a en NP.
+
+De manera formal:
+
+\begin{defi}
+
+Un \textbf{problema NPO $\Pi$} es una 4-tupla (\textbf{I}, Sol, m, obj) tal que:
+
+\begin{itemize}
+
+\item \textbf{I} es el conjunto de entradas del problema (reconocibles en tiempo polin\'omico);
+
+\item Sea I $\in$ \textbf{I}, Sol(I) es el conjunto de soluciones factibles de I, y adem\'as, $\forall$S $\in$ Sol(I), la factibilidad de S debe poderse comprobar en tiempo polin\'omico;
+
+\item $\forall$I $\in$ \textbf{I}, al menos una de las soluciones factibles se debe poder hallar en tiempo polin\'omico;
+
+\item El valor objetivo m(I,S) de cualquier soluci\'on S, es computable en tiempo polin\'omico
+
+\item obj $\in$ \{min,max\}
+
+\end{itemize}
+
+\end{defi}
+
+\begin{obs}
+
+Algo importante a tener en cuenta es que los problemas de optimizaci\'on pueden ser de minimizaci\'on o de maximizaci\'on. A partir de ahora distingueremos casos dependiendo de si el problema es de maximizaci\'on o de minimizaci\'on
+
+\end{obs}
+
+\begin{nota}
+
+Dada una entrada I de un problema de maximizaci\'on (respectivamente de minimizaci\'on) $\Pi$ = (\textbf{I},Sol,m,obj) tenemos:
+
+\begin{itemize}
+
+\item $\omega$(I) es la peor soluci\'on de I (en sentido de la funci\'on objetivo).
+
+\item $m_A$(I,S) es el valor de la soluci\'on S calculado a trav\'es del algoritmo A para la entrada I.
+
+\item opt(I) es la soluci\'on \'optima de I.
+
+\end{itemize}
+
+\end{nota}
+
+Algo importante a decir es que $\omega$(I) est\'a definido como sigue:
+
+\begin{defi}
+
+La \textbf{peor soluci\'on $\omega$(I)} viene dada por la soluci\'on \'optima del problema $\Pi$' = (\textbf{I},Sol,m,obj') con:
+
+\begin{center}
+
+$ obj' = \left \lbrace
+\begin{array}{l l}
+max & \mbox{si }\mbox{ obj = min} \\
+min & \mbox{si }\mbox{ obj = max}
+\end{array}
+\right. $
+
+\end{center}
+
+\end{defi}
+
+Principalmente existen dos paradigmas a la hora de lidiar con la aproximaci\'on polin\'omica:
+
+\begin{defi}
+
+\textbf{Aproximaci\'on est\'andar}:
+
+La calidad de la aproximaci\'on del algoritmo A viene dada por:
+
+\begin{equation}
+\rho_{A}(I)=\frac{m_{A}(I,S)}{opt(I)}
+\end{equation}
+
+Podemos observar que el coeficiente de aproximaci\'on $\rho_{A}$(I) se encuentra entre [1,$\infty$) para problemas de minimizaci\'on y entre (0,1] para problemas de maximizaci\'on.
+
+\end{defi}
+
+\begin{defi}
+
+\textbf{Aproximaci\'on diferencial}:
+
+La calidad de la aproximaci\'on del algoritmo A viene dada por:
+
+\begin{equation}
+\delta_{A}(I)=\frac{|\omega(I)-m_{A}(I,S)|}{|\omega(I)-opt(I)|}
+\end{equation}
+
+En este caso el valor del coeficiente de aproximaci\'on se encontrar\'a entre [0,1], independientemente de si el problema es de minimizaci\'on o maximizaci\'on.
+
+\end{defi}
+
+Algo importante a tener en cuenta es que en ambos paradigmas, cuanto m\'as cercano est\'e el coeficiente de aproximaci\'on a 1, mejor ser\'a el resultado de nuestro algoritmo de aproximaci\'on A.
+
+Por \'ultimo, cabe destacar que los resultados que obtengamos con cada uno de los paradigmas generalmente van a ser diferentes incluso para un mismo problema.
+
+\subsection{Las clases de aproximaci\'on.}
+
+De acuerdo al mejor coeficiente de aproximaci\'on conocido para ellos, los problemas NP-Completos se clasifican en clases de aproximaci\'on, donde estas clases crean una jerarqu\'ia.
+
+A continuaci\'on presentamos algunas de las clases m\'as conocidas de aproximaci\'on empezando por las m\'as pesimistas hasta las m\'as optimistas.
+
+\begin{defi}
+
+\textbf{Exp-APX y Exp-DAPX}
+
+Es la clase de los problemas tal que el mejor coeficiente de aproximaci\'on conocido crece de forma exponencial para problemas de minimizaci\'on o la inversa de una exponencial para maximizaci\'on y para el paradigma diferencial con respecto del tamaño de la entrada, es decir, sea n el tamaño de una entrada I.
+$\rho_{A}(I)=(1+f(n))opt(I)$ para minimizaci\'on y $\rho_{A}(I)=\frac{opt(I)}{1+f(n)}$ para maximizaci\'on y paradigma diferencial siendo f una funci\'on exponencial con respecto de n.
+
+El problema m\'as conocido que encontramos en Exp-APX es MIN TSP\footnote{El problema del viajante para grafos completos, que definiremos formalmente en la secci\'on 4.}. Por otro lado, no se conoce ning\'un problema de optimizaci\'on que pertenezca a la clase Exp-DAPX\footnote{Aqu\'i abusamos un poco del significado de pertenecer, ya que nos referimos a pertenecer a la clase Exp-DAPX pero no pertenecer a una clase m\'as ``optimista'' de aproximaci\'on.} y no pertenezca a ninguna clase mejor de aproximabilidad.
+
+\end{defi}
+
+\begin{defi}
+
+\textbf{Poly-APX y Poly-DAPX}
+
+Es la clase de los problemas tal que el mejor coeficiente de aproximaci\'on conocido crece de forma polin\'omica para problemas de minimizaci\'on o la inversa de un polinomio para maximizaci\'on y para el paradigma diferencial con respecto del tamaño de la entrada, es decir, sea n el tamaño de una entrada I.
+$\rho_{A}(I)=(1+f(n))opt(I)$ para minimizaci\'on y $\rho_{A}(I)=\frac{opt(I)}{1+f(n)}$ para maximizaci\'on y paradigma diferencial siendo f una funci\'on polin\'omica con respecto de n.
+
+El problema de maximizaci\'on de los Conjuntos independientes (MAX PCI)\footnote{Su versi\'on de problema de decisi\'on est\'a definida en la secci\'on~\ref{sec:preliminares}.}, MAX CLIQUE, MIN COLORING\footnote{Se definir\'a en la secci\'on 4.}, etc., pertenecen a Poly-APX. Por otro lado, MAX PCI, MAX CLIQUE, Conjunto de recubrimiento m\'inimo, Conjunto de v\'ertices de recubrimiento m\'inimo\footnote{Estos dos \'ultimos definidos en la secci\'on 4.} pertenecen a Poly-DAPX.
+
+\end{defi}
+
+\begin{defi}
+
+\textbf{Log-APX y Log-DAPX}
+
+Es la clase de los problemas tal que el mejor coeficiente de aproximaci\'on conocido crece de forma logar\'itmica para problemas de minimizaci\'on o la inversa de un logaritmo para maximizaci\'on y para el paradigma diferencial con respecto del tamaño de la entrada, es decir, sea n el tamaño de una entrada I.
+$\rho_{A}(I)=(1+f(n))opt(I)$ para minimizaci\'on y $\rho_{A}(I)=\frac{opt(I)}{1+f(n)}$ para maximizaci\'on y paradigma diferencial siendo f una funci\'on logar\'itmica con respecto de n.
+
+El conjunto de recubrimiento m\'inimo es uno de los problemas m\'as representativos de Log-APX, sin embargo, al igual que en Exp-APX, no hay ning\'un problema de optimizaci\'on que se conozca que est\'e exclusivamente en Log-DAPX.
+
+\end{defi}
+
+A partir de aqu\'i empezamos a encontrar las clases de aproximaci\'on m\'as \'utiles, en el sentido de que pertenecer a ellas garantiza mejores opciones de aproximabilidad.
+
+
+\begin{defi}
+
+\textbf{APX y DAPX}
+
+Los problemas de esta clase son aquellos aproximables con un coeficiente de aproximaci\'on constante independientemente del tamaño de la entrada, es decir, $\exists$$a\in{{\rm I\!R}^{+}}$ t.q $\rho_{a}(I)=a*opt(I)$.
+
+Algunos problemas que pertenecen a APX son: MAX TSP, conjunto de v\'ertices de recubrimiento m\'inimo, MIN METRIC TSP \footnote{Es el problema MIN TSP pero en un grafo completo t.q los valores de las aristas verifican la desigualdad triangular.}, y en DAPX podemos encontrar MIN TSP, MAX TSP, MIN COLORING.
+
+\end{defi}
+
+\begin{defi}
+
+\textbf{PTAS y DPTAS}
+
+Los problemas de esta clase son aquellos que admiten un esquema de aproximaci\'on en tiempo polin\'omico. Un esquema de aproximaci\'on en tiempo polin\'omico es una secuencia de algoritmos $A_{\varepsilon}$ que consiguen un coeficiente de aproximaci\'on de $1+\varepsilon$ $\forall\varepsilon> 0$ ($1-\varepsilon$ para problemas de maximizaci\'on y para DPTAS) en tiempo polin\'omico respecto del tamaño de la entrada pero exponencial respecto del tamaño de 1/$\varepsilon$.
+
+Algunos problemas que pertenecen a PTAS son: MAX PLANAR INDEPENDENT SET\footnote{MAX INDEPENDENT SET en grafos en los que sus aristas solo coinciden en los v\'ertices.}, MIN PLANAR VERTEX COVER \footnote{MIN VERTEX COVER en planos cuyas aristas solo se intersecan en los v\'ertices.} y MIN EUCLIDEAN TSP \footnote{MIN METRIC TSP en el (0,1)-plano.} y como problemas que pertenecen a DPTAS tenemos a MAX INDEPENDENT SET, MIN PLANAR VERTEX COVER, etc.
+
+\end{defi}
+
+\begin{defi}
+
+\textbf{FPTAS y DFPTAS}
+
+Los problemas que pertenecen a esta clase son los problemas que admiten un esquema de aproximaci\'on completo en tiempo polin\'omico completo. Un esquema de aproximaci\'on en tiempo polin\'omico completo es un esquema de aproximaci\'on polin\'omica tal que es tambi\'en polin\'omico respecto del tamaño de 1/$\varepsilon$.
+
+El problema m\'as conocido que pertenece a FPTAS y DFPTAS es el problema de la mochila.
+
+\end{defi}
+
+Finalmente, nos faltar\'ia hablar de la clase 0-DAPX que es \'unica de la aproximaci\'on diferencial ya que tiene que ver con la peor soluci\'on.
+
+\begin{defi}
+
+\textbf{0-DAPX}
+
+Los problemas que pertenecen a esta clase son aquellos que para cualquier algoritmo polin\'omico existe al menos una entrada para la cual devuelven la peor soluci\'on, es decir, $\forall$A algoritmo de aproximaci\'on polin\'omico $\exists$I $\in$ \textbf{I} t.q $\rho_{A}$(I) = 0 (es decir que $m_A$(I,S) = $\omega$(I))
+
+MIN INDEPENDENT DOMINATING SET\footnote{Dado un grafo G(V,E) se trata de encontrar un subconjunto S$\subseteq$V t.q S sea un conjunto independiente y cumpla que $\forall$v$\in$V$\backslash$S, v tiene un vecino en S.} pertenece a 0-DAPX
+
+\end{defi}
+
+\subsection{Jerarqu\'ia de las clases de aproximaci\'on}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=6.5cm, height=5cm]{ClasesStandart}
+\caption{Ilustraci\'on de la jerarqu\'ia para el paradigma de aproximaci\'on est\'andar}
+\end{figure}
+
+Algo que hemos mencionado anteriormente es que a a partir de APX empez\'abamos a tener clases m\'as \'utiles, esto es debido a que hay una jerarqu\'ia en las clases de aproximaci\'on:
+
+\vspace{\baselineskip}
+
+Para la \textbf{aproximaci\'on est\'andar}:
+
+PO\footnote{Es la clase an\'aloga a P en problemas de optimizaci\'on.}  $\subset$ FPTAS $\subset$ PTAS $\subset$ APX $\subset$ Log-APX $\subset$ Poly-APX $\subset$ Exp-APX $\subset$ NPO
+
+\vspace{\baselineskip}
+
+Para la \textbf{aproximaci\'on diferencial}:
+
+PO $\subset$ DFPTAS $\subset$ DPTAS $\subset$ DAPX $\subset$ Log-DAPX $\subset$ Poly-DAPX $\subset$ Exp-DAPX $\subset$ 0-DAPX $\subset$ NPO
+
+\vspace{\baselineskip}
+
+Algo interesante sobre el estudio de la aproximabilidad es el estudio de la inaproximabilidad que no vamos a tratar aqu\'i, pero todas las inclusiones de la jerarqu\'ia son estrictas a no ser que se cumpla que P = NP.
+
+Hay problemas que se ha demostrado que pertenecen a una clase pero no a la clase inmediatamente m\'as pequeña (salvo que se cumpla P=NP). Como por ejemplo el problema de MAX CLIQUE\cite{MAX_CLIQ_INA}.
 
 \newpage
 
-\begin{thebibliography}{0}
-  \bibitem{HopcroftESP} John E. Hopcroft, Rajeev Motwani, Jeffrey D. Ullman. Teor\'ia de aut\'omatas, lenguajes y computaci\'on.
-  \bibitem{AroraBarak} Sanjeev Arora, Boaz Barak. Computational Complexity, A Modern Approach.
-  \bibitem{approx_core} Vangelis Th. PASCHOS. An Overview on Polynomal Approximation of NP-Hard Problems
-  \bibitem{aks_complexity} Alberto Bedodi, Frencesco Pappalardi. Primality Tests in Polynomial Time
-  \bibitem{knapsack1} M. X. Goemans, The Knapsack Problem and Fully Polynomial Time Approximation Schemes (FPTAS).
-\end{thebibliography}
+\section{Estudio de aproximabilidad en varios problemas NP-Duros.}
+
+La bibliograf\'ia para esta secci\'on es: \cite{approx_core}, \cite{knapsack2}, \cite{max-pci1}, \cite{max-pci2}, \cite{max-pci3}, \cite{max-pci4}, \cite{mvc1}, \cite{TSP1} y \cite{TSP2}.
+
+\vspace{0.3cm}
+
+En esta secci\'on analizaremos diversos problemas NP-Duros que pertenezcan a distintas clases de aproximaci\'on, buscaremos un algoritmo de aproximaci\'on para cada uno de ellos y calcularemos el coeficiente de aproximaci\'on de \'estos para ver a qu\'e clase pertenecen.
+
+\subsection{El problema de la mochila.}
+
+El problema de la mochila se puede definir como sigue:
+dados dos vectores de enteros $\overrightarrow{a}$ y $\overrightarrow{c}$ y una constante \textit{b} $\in$ $\mathbb{Z^+}$, entonces es el problema de optimizaci\'on lineal entera dado por:
+
+\vspace{0.3cm}
+
+$
+I =
+\left\{\begin{aligned}
+max \quad & \overrightarrow{a}\cdot\overrightarrow{x} \\
+s.a \quad & \overrightarrow{c}\cdot\overrightarrow{x} \leq \textit{b} \\
+    & \overrightarrow{x} \in \{0,1\}
+\end{aligned}\right.
+$
+
+\vspace{0.3cm}
+
+\textbf{Algoritmo de aproximaci\'on:}\cite{knapsack2}
+\begin{enumerate}
+\item Fijamos un $\varepsilon$ $\in (0,1)$ y construimos la entrada $I' = ((a'_i,c_i)_{i=1,...,n},b)$ con $a'_i = \left\lfloor \frac{a_{i}}{t}\right\rfloor$ con $t=\frac{a_{max}\varepsilon}{n}$ y $a_{max} = \max\limits_{i\in\{1,...,n\}}a_i$
+\item Salida S := PROGRAMACI\'ON-DIN\'AMICA(I')
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=7cm, height=4cm]{knapsack1}
+\caption{Arriba tenemos la entrada original del problema y abajo tenemos al nuevo vector de costes que se genera en el paso 1 del algoritmo}
+\end{figure}
+
+Este algoritmo de programaci\'on din\'amica es un ejemplo cl\'asico de c\'omo se construyen los algoritmos de aproximaci\'on en tiempo polin\'omico, generalmente vamos a intentar escalar los datos que tengamos de tal forma que nos quede una entrada que podamos resolver en tiempo polin\'omico, y por \'ultimo, probaremos que la soluci\'on obtenida corresponde a una soluci\'on factible de la entrada original cuyo valor est\'e ``lo suficientemente cerca'' de la soluci\'on \'optima.
+
+El paso dos se ejecuta en $O(n^{2}a'_{max}\text{log}c_{max})$ = $O(\frac{n^{3}\text{log}c_{max}}{\varepsilon})$, por tanto el algoritmo entero se ejecuta en tiempo polin\'omico.
+
+Ahora nos faltar\'ia probar que KNAPSACK $\in$ FPTAS.
+
+\begin{teo}
+
+KNAPSACK $\in$ FPTAS.
+
+\begin{dem}
+
+Sea S* una soluci\'on \'optima de I, obviamente S* es factible para I'. Sea:
+
+\begin{equation} \label{knap:eq:1}
+t = \frac{a_{max}\varepsilon}{n}
+\end{equation}
+
+entonces para cada i = 1,...,n; tenemos:
+
+\begin{equation} \label{knap:eq:2}
+a'_i=\left\lfloor\frac{a_i}{t}\right\rfloor
+\end{equation}
+
+y adem\'as sabemos que gracias a las propiedades de la funci\'on parte entera se cumple que:
+
+\begin{equation} \label{knap:eq:3}
+t\left\lfloor\frac{a_i}{t}\right\rfloor \leq a_i \leq t(\left\lfloor\frac{a_i}{t}\right\rfloor+1)
+\end{equation}
+
+y por lo tanto obtenemos lo siguiente:
+
+\begin{equation} \label{knap:eq:4}
+\begin{split}
+& opt(I') \geq \sum_{i\in{S^*}}a'_i \geq \sum_{i\in{S^*}}\left(\frac{a_i}{t}-1\right) \geq \frac{opt(I)}{t} - |S^*| \geq \frac{opt(I)}{t} - n \Longrightarrow \\ & \Longrightarrow t{opt}(I') \geq opt(I) - nt
+\end{split}
+\end{equation}
+
+
+Ahora, nos fijamos que $a_{max}$ es factible, ya que si no lo fuera la habr\'iamos quitado de la entrada I, por tanto:
+
+\begin{equation} \label{knap:eq:5}
+opt(I)=\sum_{i\in{S^*}}a_i \geq a_{max}
+\end{equation}
+
+Ahora si ponemos juntos (\ref{knap:eq:1}), (\ref{knap:eq:4}) y (\ref{knap:eq:5}) obtenemos:
+
+\begin{equation} \label{knap:eq:6}
+nt = a_{max}\varepsilon \leq \varepsilon{opt(I)}
+\end{equation}
+
+Por tanto, lo siguiente se cumple para el valor de la soluci\'on S que devuelve el algoritmo:
+
+\begin{equation} \label{knap:eq:7}
+m(I,S) = \sum_{i\in{S}}a_i \geq t\sum_{i\in{S}}a_{i'} = t{opt}(I') \geq opt(I) - nt \geq (1-\varepsilon)opt(I)
+\end{equation}
+
+Ahora lo \'unico que faltar\'ia ver es que la complejidad del algoritmo es ``completamente'' polin\'omica, ya que no depende de $\varepsilon$. Es m\'as, como depende del logaritmo de $c_{max}$ el algoritmo ser\'a polin\'omico incluso aunque $c_{max}$ sea exponencial con respecto al tamaño n de entrada, por tanto con esto acabamos de probar que KNAPSACK $\in$ FPTAS
+
+\end{dem}
+\end{teo}
+
+\begin{obs}
+
+Algo interesente de esta demostraci\'on es que si nos fijamos, la soluci\'on en la que no seleccionamos ning\'un objeto es tambi\'en una soluci\'on factible, es m\'as, es la peor soluci\'on y vale 0. Por tanto tenemos tambi\'en que El problema de la mochila pertenece a DFPTAS.
+
+\end{obs}
+
+\subsection{El problema del conjunto independiente maximal.}\label{pciT}
+
+Dado un grafo $G(V,E)$, el problema del Conjunto Independiente Maximal (\textbf{MAX PCI}) consiste en determinar el subconjunto de mayor tamaño $V'\subseteq V$ tal que, $\forall$ $(u,v)$ $\in$ $V'$x$V'$, $(u,v)$ $\notin$ $E$.
+
+Primero vamos a considerar la formulaci\'on del problema como un problema de optimizaci\'on lineal entera (M-PCI), adem\'as vamos a considerar su relajaci\'on lineal (M-PCI-R), donde dado un grafo $G(V,E)$, A es su matriz de incidencia:
+
+\vspace{\baselineskip}
+
+\begin{minipage}{.5\textwidth}
+M-PCI =
+$
+\left\{\begin{aligned}
+max \quad & \overrightarrow{1}\cdot\overrightarrow{x} \\
+    & A\overrightarrow{x}\leq \overrightarrow{1} \label{pci:1}\\
+    & \overrightarrow{x} \in \{0,1\}^n
+\end{aligned}\right.
+$
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+
+M-PCI-R=
+$
+\left\{\begin{aligned}
+max \quad & \overrightarrow{1}\cdot\overrightarrow{x} \\
+    & A\overrightarrow{x}\leq \overrightarrow{1} \\
+    & \overrightarrow{x} \in [0,1]^n
+\end{aligned}\right.
+$
+\end{minipage}
+
+\vspace{\baselineskip}
+
+De acuerdo con \cite{max-pci1} obtenemos el siguiente teorema:
+
+\begin{teo} 
+\label{pci:teo:1}
+
+La soluci\'on \'optima de M-PCI-R es semi-integral, es decir, a $\overrightarrow{x}$ se le asignan los valores {0,1,1/2}. Adem\'as, sean $V_0$, $V_1$ y $V_{1/2}$ los subconjuntos asociados con 0, 1 y 1/2 respectivamente, entonces existe un conjunto independiente maximal S* tal que:
+
+\begin{enumerate}
+\item $V_1 \subseteq S^*$
+\item $V_0 \subseteq V{\backslash}S^*$
+\end{enumerate}
+
+\end{teo}
+
+Un corolario sencillo que podemos deducir del teorema \ref{pci:teo:1} es que para resolver M-PCI podemos resolver primero M-PCI-R (que se puede resolver en tiempo polinomial \cite{max-pci2}) y guardar $V_1$ para luego resolver el M-PCI de alguna forma para $G[V_{1/2}]$\footnote{El subgrafo de G inducido por $V_{1/2}$.}
+
+Ciertamente, la soluci\'on de M-PCI-R nos devuelve los conjuntos $V_0$, $V_1$ y $V_{1/2}$ que forman una partici\'on en V. Adem\'as, por como est\'an definidas las restricciones del problema, pueden existir aristas entre los v\'ertices en los subgrafos inducidos por $V_0$ y en $V_{1/2}$, adem\'as de que puede haber aristas entre los v\'ertices de $V_1$ y $V_0$ y entre $V_0$ y $V_{1/2}$ (Figura \ref{pci:fig:1}) (no puede haber entre $V_1$ y $V_{1/2}$ ya que entonces la restricci\'on $A\overrightarrow{x} \leq \overrightarrow{1}$ no se cumplir\'ia) por lo que la uni\'on de $V_1$ (que es un conjunto independiente por si solo) y la de un conjunto independiente de $G[V_{1/2}]$ es un conjunto independiente de todo $G$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=7cm, height=4cm]{MAXPCI}
+\caption{Esquema de d\'onde pueden existir aristas}
+\label{pci:fig:1}
+\end{figure}
+
+Ahora consideremos el siguiente algoritmo, dado por \cite{max-pci3}, que llamaremos IS.
+
+\vspace{0.3cm}
+
+\textbf{Algoritmo IS:}
+
+\begin{enumerate}
+\item Resolver M-PCI-R para hallar $V_0$, $V_1$, $V_{1/2}$.
+\item Colorear\footnote{Dado un grafo $G(V,E)$, un coloreado de $V$ consiste en colorear los v\'ertices de $V$ de tal forma que no hay v\'ertices adyacentes que tengan el mismo color; en otras palabras, cada color va a ser un conjunto independiente de V y podremos decir que un coloreado de V es, en efecto, una partici\'on de V en conjuntos independientes.} $G[V_{1/2}]$ con a lo sumo $\Delta(G[V_{1/2}])$\footnote{Dado un grafo $G$, $\Delta(G)$ denota el grado m\'aximo del grafo, es decir, el m\'aximo n\'umero de aristas en un solo v\'ertice.} colores. Definir $hat{S}$ como subconjunto de v\'ertices de $G[V_{1/2}]$ cuyo color es el que m\'as v\'ertices cubre del grafo.
+\item Devolver $S = V_1\cup \hat{S}$.
+\end{enumerate}
+
+\begin{teo}
+
+El algoritmo IS alcanza un coeficiente de aproximaci\'on est\'andar de $\frac{2}{\Delta(G)}$.
+
+\begin{dem}
+
+Gracias a \cite{max-pci4} sabemos que podemos colorear un grafo $G$ con a lo sumo $\Delta(G)$ colores en tiempo polin\'omico, gracias a esto podemos afirmar que el algoritmo se realiza en tiempo polin\'omico.
+
+Sea $S^*$ un conjunto independiente maximal de G que contiene a $V_1$ (por el teorema \ref{pci:teo:1} esto siempre es posible). Como $\hat{S}$ es el conjunto de mayor tamaño de como mucho $\Delta(G[V_{1/2}])$ colores (conjuntos independientes) producidos en el paso 2 del algoritmo IS, su tamaño cumple:
+
+\begin{equation} \label{pci:eq:1}
+|\hat{S}| \geq \frac{|V_{1/2}|}{\Delta(G[V_{1/2}])}
+\end{equation}
+
+El tamaño del conjunto $S$ devuelto por el paso 3 del algoritmo viene dado por:
+
+\begin{equation} \label{pci:eq:2}
+m(S,G)=|S|=|V_1|+|\hat{S}| \geq |V_1| + \frac{|V_{1/2}|}{\Delta(G[V_{1/2}])}\geq |V_1| + \frac{|V_{1/2}|}{\Delta(G)}
+\end{equation}
+
+Por \'ultimo, denotemos por $S_{1/2}^{*}$ a un conjunto independiente maximal de $G[V_{1/2}]$. Si nos fijamos, el valor de la soluci\'on \'optima para M-PCI-R en $G[V_{1/2}]$ es igual a $|\frac{V_{1/2}}{2}|$.
+
+Como M-PCI es un problema de programaci\'on lineal entera de maximizaci\'on, est\'a claro que estar\'a acotado superiormente por su relajaci\'on lineal M-PCI-R, es decir, tenemos que:
+
+\begin{equation} \label{pci:eq:3}
+|S_{1/2}^{*}| \geq \frac{|V_{1/2}|}{2}
+\end{equation}
+
+Por tanto gracias a (\ref{pci:eq:3}) obtenemos lo siguiente:
+
+\begin{equation} \label{pci:eq:4}
+opt(G) = |S^*| = |V_1| + |S_{1/2}^*| \geq |V_1| + \frac{|V_{1/2}|}{2}
+\end{equation}
+
+Antes de estudiar el coeficiente de aproximaci\'on estudiaremos una propiedad de los n\'umeros positivos que nos ayudar\'a a lograr nuestro resultado: sean $a,b \in \mathbb{R}^+$ con $a\geq b$ entonces se cumple que $\forall c \in \mathbb{R}^+$:
+
+\begin{equation} \label{pci:eq:5}
+\frac{b + c}{a + c} \geq \frac{b}{a}
+\end{equation}
+
+Ahora por \'ultimo, si juntamos (\ref{pci:eq:2}), (\ref{pci:eq:4}), y usamos (\ref{pci:eq:5}) obtenemos que:
+
+\begin{equation} \label{pci:eq:6}
+\rho_{IS}(G) = \frac{m(S,G)}{opt(G)} \geq \frac{|V_1| + \frac{|V_{1/2}|}{\Delta(G)}}{|V_1| + \frac{|V_{1/2}|}{2}} \geq \frac{\frac{|V_{1/2}|}{\Delta(G)}}{\frac{|V_{1/2}|}{2}} = \frac{2}{\Delta(G)}
+\end{equation}
+
+\end{dem}
+
+Un resultado inmediato de este teorema es que MAX-PCI $\in$ Poly-APX. Adem\'as como la peor soluci\'on es no seleccionar ning\'un v\'ertice, obtenemos que $\omega(G) = 0$ y por tanto MAX-PCI $\in$ Poly-DAPX.
+
+\end{teo}
+
+\subsection{Min vertex cover. (MVC)}
+
+Dado un grafo $G(V,E)$, Min Vertex Cover consiste en determinar el conjunto de menor tamaño $V' \subseteq V$ tal que $\forall (u,v)\in E$, se tiene que $u \in V'$ \'o $v \in V'$.
+
+Consideraremos el siguiente algoritmo llamado MATCHING:
+
+\vspace{0.3cm}
+
+\textbf{Algoritmo MATCHING:}
+
+\begin{enumerate}
+\item Computar un matching\footnote{Un matching es un subconjunto $ M \subseteq E$ tal que $M$ no tiene aristas que compartan v\'ertices. $M$ es maximal si $\forall (u,v)\in E$, $\exists(u',v')\in M$ tal que $u=u'$ o $v=v'$ o $u=v'$ o $v=u'$.} maximal $M$ en $G$;
+\item Devolver el conjunto $C$ de los v\'ertices de las aristas de $M$.
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=7cm, height=4cm]{MVC1}
+\caption{Arriba: grafos; abajo: el matching correspondiente a cada grafo}
+\label{mvc:fig:1}
+\end{figure}
+
+\begin{teo}
+\label{mvc:teo:1}
+
+MVC $\in$ APX
+
+\begin{dem}
+
+Primero veamos que el algoritmo se realiza en tiempo polin\'omico.
+Esto es cierto ya que para encontrar el matching maximal nos basta con coger una arista $e$, borrarla de G con todas las aristas adyacentes a $e$, e ir repitiendo este proceso hasta que nos quedemos sin aristas.
+
+Lo segundo es probar que $C$ es un vertex cover de $G$. Los v\'ertices de cada arista $e$ de $M$ cubren $e$ (la figura \ref{mvc:fig:1} ejemplifica como funciona el matching) y cualquier otra arista que comparta un v\'ertice con $e$. Sea $V(M)$ el conjunto de v\'ertices de las aristas de $M$, como $M$ se ha construido para ser maximal, las aristas de M tienen v\'ertices comunes con cualquier arista en $E\backslash M$, por lo que $V(M)$ cubre M y $E\backslash M$, por tanto $V(M)$ cubre $E$.
+
+Por \'ultimo tenemos que estudiar el ratio de aproximaci\'on.
+Sea $m=|M|$; entonces:
+
+\begin{equation} \label{mvc:eq:1}
+|V(M)|=m(G,C)=2m
+\end{equation}
+
+Por otro lado, como las aristas de M no comparten ning\'un v\'ertice, cualquier soluci\'on (incluida la \'optima) usar\'a como m\'inimo $m$ v\'ertices para poder cubrirlos (un v\'ertice por arista de $M$). Por lo que si denotamos por $\tau(G)$ al cardinal del Min Vertex Cover de G, entonces tenemos que:
+
+\begin{equation} \label{mvc:eq:2}
+opt(G) = \tau(G) \geq m
+\end{equation}
+
+Y si juntamos (\ref{mvc:eq:1}) y (\ref{mvc:eq:2}) obtenemos:
+
+\begin{equation} \label{mvc:eq:3}
+\rho_{MATCHING}(G) = \frac{m(G,C)}{opt(G)} = \frac{m(G,C)}{\tau(G)} \leq \frac{2m}{m} = 2
+\end{equation}
+
+Por tanto el problema MVC es un algoritmo de 2-aproximaci\'on-est\'andar y MVC$\in$APX
+
+\end{dem}
+
+\end{teo}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=7cm, height=3.5cm]{MVC2}
+\caption{Ejemplo de grafo en el que alcanzamos $\rho_{MATCHING} = 2$, a la izquierda la soluci\'on \'optima (1 v\'ertice), a la derecha la soluci\'on dada por MATCHING (2 v\'ertices)}
+\end{figure}
+
+Algo que mencionamos anteriormente es que no siempre coincide un problema en la misma clase para los paradigmas est\'andar y diferencial, este es el caso del MVC que en el paradigma diferencial pertenece a Poly-DAPX\cite{mvc1}.
+
+\subsection{MIN TSP.}
+
+Dado un grafo completo de $n$ v\'ertices, que llamaremos $K_n$, con pesos positivos en cada una de sus aristas, MIN TSP consiste en determinar el ciclo Hamiltoniano\footnote{Un ciclo Hamiltoniano de G es un ciclo simple que pasa por todos los v\'ertices de G.} de $K_n$ que menor coste tenga.
+
+Antes de nada, vamos a recalcar que con respecto al paradigma diferencial, hallar la peor soluci\'on para MIN TSP es complicado. Al contrario que en alguno de los problemas anteriores no nos vale con coger el conjunto vac\'io, es m\'as, la peor soluci\'on de MIN TSP es la soluci\'on \'optima de MAX TSP, donde lo que queremos es determinar el ciclo Hamiltoniano de mayor coste, que a su vez es un problema NP-Duro, por lo que determinar la peor soluci\'on es tan dif\'icil de hallar como la \'optima.
+
+Vamos a considerar el siguiente algoritmo para MIN TSP, que llamaremos 2\_{OPT} y fue descubierto originalmente por \cite{TSP1} donde $d(i,j)$ denota el peso de la arista $(v_i,v_j)$.
+Para poder usar el siguiente algoritmo adem\'as vamos a suponer que $d_{max}$ est\'a acotada superiormente por un funci\'on polin\'omica que dependa de n, para otros casos donde 2\_{OPT} es polin\'omico se recomienda consultar \cite{TSP2}.
+
+\vspace{0.3cm}
+
+\textbf{Algoritmo 2\_OPT:}
+
+\begin{enumerate}
+\item Construir un ciclo hamiltoniano $T$ (esto puede realizarse mediante el m\'etodo heur\'istico del vecino m\'as pr\'oximo).
+\item consideramos dos aristas $(v_i,v_j)$ y $(v_{i'},v_{j'})$ de $T$; si se cumple que $d(i,j)+d(i',j') > d(i,i')+d(j,j')$, entonces remplazamos $(v_i,v_j)$ y $(v_{i'},v_{j'})$ en $T$ por $(v_i,v_{i'})$ y $(v_j,v_{j'})$, es decir, producimos un nuevo ciclo Hamiltoniano $(T\backslash\{(v_i,v_j),(v_{i'},v_{j'})\})\cup \{(v_i,v_{i'}),(v_j,v_{j'})\}$.
+\item repetir el paso 2 hasta que $\forall (v_i,v_j), (v_{i'},v_{j'}) \in T$ $d(i,j)+d(i',j') \leq d(i,i')+d(j,j')$.
+\item Devolver $T$.
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=8cm, height=3cm]{TSP1}
+\caption{Ejemplo de ejecuci\'on del paso 2 del algoritmo 2\_OPT}
+\end{figure}
+
+Gracias a \cite{TSP2} tenemos una prueba de que el algoritmo 2\_OPT alcanza un coeficiente de aproximaci\'on diferencial que est\'a acotado por 1/2 y podremos concluir que MIN TSP pertenece a DAPX.
+
+\begin{teo}
+\label{tsp:teo:1}
+
+2\_OPT $\in$ DAPX.
+
+\begin{dem}
+
+Lo primero que tenemos que ver es que el algoritmo se ejecuta en tiempo poli\'omico, pero gracias a \cite{TSP2} (y dadas las condiciones que le hemos impuesto al grafo) obtenemos que se ejecuta en tiempo polin\'omico.
+
+Ahora tenemos que demostrar que el coeficiente de aproximaci\'on diferencial est\'a acotado inferiormente por 1/2, pero primero veremos algunas cuestiones de notaci\'on que nos ayudar\'an con la demostraci\'on.
+
+Lo primero es que vamos a asumir que $T$ est\'a representado como sigue, es decir, $T$ est\'a ordenado en el orden en el que se recorren las aristas:
+
+\begin{equation} \label{tsp:eq:1}
+T=\{ (v_1,v_2),...,(v_i,v_{i+1}),...,(v_n,v_1) \}
+\end{equation}
+
+Ahora, vamos a denotar por $T^*$ al ciclo Hamiltoniano \'optimo. Y sea $s^*(i)$ el \'indice sucesor de $v_i$ en $T^*$, entonces $s^*(i)+1$ es el \'indice sucesor de $v_{s^*(i)}$ en $T$ (mod $n$), en otras palabras si $s^*(i) = j$, entonces $s^*(i)+1 = j+1 $(mod $n$).
+
+El ciclo que nos devuelve el algoritmo 2\_OPT es un \'optimo local para el intercambio de aristas en el sentido de que entre las dos aristas que no se intersecan de $T$ y las otras dos aristas que no se intersecan de $E\backslash T$ se producir\'a un ciclo de una distancia total por lo menos igual a $d(T)$, donde $d(T)$ denota el peso total de $T$. En particular esto implica que, $\forall i \in \{1,...,n\}$:
+
+\begin{equation} \label{tsp:eq:2}
+d(i,i+1)+d(s^*(i),s^*(i)+1) \leq d(i,s^*(i))+d(i+1,s^*(i)+1)
+\end{equation}
+
+Si denotamos como $T_{\omega}$ al peor ciclo en $K_n$ lo siguiente se cumple:
+
+\begin{equation} \label{tsp:eq:3}
+\bigcup\limits_{i=1,...,n}\{(v_i,v_{i+1})\} = \bigcup\limits_{i=1,...,n}\{(v_{s^*(i)},v_{s^*(i)+1})\}=T
+\end{equation}
+
+\begin{equation} \label{tsp:eq:4}
+\bigcup\limits_{i=1,...,n} \{(v_i, v_{s^*(i)})\} = T^* \text{ (Figura \ref{tsp:fig:2})}
+\end{equation}
+
+\begin{equation} \label{tsp:eq:5}
+\bigcup\limits_{i=1,...,n} \{(v_{i+1},v_{s^*(i)+1})\} = T' \text{ (Figura \ref{tsp:fig:2})}
+\end{equation}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=12cm, height=4cm]{TSP2}
+\caption{Los ciclos $T^*$ (izquierda) y $T'$ (derecha) para un $K_6$}
+\label{tsp:fig:2}
+\end{figure}
+
+El ciclo $T'$ es un ciclo Hamiltoniano factible y por tanto cumplir\'a que $d(T') \leq d(T_{\omega})$
+
+Ahora si sumamos cada arista de (\ref{tsp:eq:2}) obtenemos que:
+
+\begin{equation} \label{tsp:eq:6}
+\sum_{i=1}^n \left( d(i,i+1)+d(s^*(i),s^*(i)+1) \right) \leq \sum_{i=1}^n \left(d(i,s^*(i))+d(i+1,s^*(i)+1)\right)
+\end{equation}
+
+y de igual forma con (\ref{tsp:eq:3}), (\ref{tsp:eq:4}), (\ref{tsp:eq:5}) obtenemos:
+
+\begin{equation} \label{tsp:eq:7}
+(\ref{tsp:eq:3}) \Rightarrow \sum_{i=1}^n d(i,i+1) + \sum_{i=1}^n d(s^*(i), s^*(i)+1) = 2m(K_n,T)
+\end{equation}
+
+\begin{equation} \label{tsp:eq:8}
+(\ref{tsp:eq:4}) \Rightarrow \sum_{i=1}^n d(i, s^*(i)) = opt(K_n)
+\end{equation}
+
+\begin{equation} \label{tsp:eq:9}
+(\ref{tsp:eq:5}) \Rightarrow \sum_{i=1}^n d(i+1,s^*(i)+1) = d(T') \leq \omega(K_n)
+\end{equation}
+
+Ahora si sustituimos (\ref{tsp:eq:7}), (\ref{tsp:eq:8}), (\ref{tsp:eq:9}) en (\ref{tsp:eq:6}) obtenemos:
+
+\begin{equation} \label{tsp:eq:10}
+\begin{split}
+& 2m(K_n,T) \leq opt(K_n) + d(T') \leq opt(K_n) + \omega(K_n) \Leftrightarrow \\ & 2m(K_n,T) - 2\omega(K_n) \leq opt(K_n) - \omega(K_n) \Leftrightarrow \\ & 2(\omega(K_n) - m(K_n,T) \geq \omega(K_n) - opt(K_n) \Leftrightarrow \\ & \delta_{2\_OPT}(K_n) = \frac{\omega(K_n) - m(K_n,T)}{\omega(K_n) - opt(K_n)} \geq \frac{1}{2}
+\end{split}
+\end{equation}
+
+Y por tanto obtenemos que MIN TSP $\in$ DAPX.
+
+\end{dem}
+\end{teo}
+
+Por \'ultimo nos queda mencionar que para el paradigma de aproximaci\'on est\'andar MIN TSP es un problema de la clase Exp-APX \cite{approx_core} y adem\'as se ha probado que no pertenece a la clase DPTAS (a no ser que P=NP)\cite{TSP2}.
+
+\newpage
+
+\section{Aproximabilidad mediante reducciones.}
+
+La bibliograf\'ia para esta secci\'on es: \cite{approx_core}, \cite{red1} y \cite{red2}.
+
+\vspace{0.3cm}
+
+Ya hemos hablado anteriormente de las reducciones polin\'omicas (secci\'on \ref{reduc1}) en problemas NP-Completos, no es dif\'icil imaginarse que existan otra clase de reducciones para los problemas NPO y sus diferentes clases de aproximaci\'on, de forma que si tenemos 2 problemas $P_1$ y $P_2$ y sabemos que $P_2$ pertenece a una clase de aproximaci\'on, en algunas ocasiones podremos usar un nuevo tipo de reducciones para demostrar que $P_1$ pertenece a la misma clase que $P_2$ reduci\'endolo a este \'ultimo.
+
+\subsection{Reducciones que preservan aproximabilidad.}
+
+Las reducciones que preservan aproximabilidad son aquellas reducciones que usaremos para los problemas en las diferentes clases de aproximaci\'on.
+
+\begin{defi}
+
+Dados dos problemas NPO $\Pi$ = (\textbf{I}, Sol, $m$, obj) y $\Pi'$ = (\textbf{I'}, Sol', $m$', obj'), una reducci\'on que preserva aproximabilidad R  de $\Pi$ a $\Pi'$ (lo denotaremos como $\Pi \leq_{R} \Pi'$) es una terna $(f, g, c)$ de funciones cumputables en tiempo polin\'omico tal que:
+
+\begin{itemize}
+
+\item f transforma una entrada $I\in\textbf{I}$ en una entrada $f(I)\in\textbf{I'}$.
+\item g transforma una soluci\'on $S'\in Sol'(f(I))$ en una soluci\'on $g(I',S')\in Sol(I)$.
+\item c transforma el coeficiente de aproximaci\'on de aproximaci\'on $\rho'(f(I),S')$ en $\rho(I,g(I,S')) = c(\rho'(f(I),S')) $.
+
+\end{itemize}
+
+\end{defi}
+
+\begin{obs}
+
+Sean $\Pi$, $\Pi'$ y R t.q $\Pi \leq_{R} \Pi'$ entonces se cumple:
+
+\begin{itemize}
+
+\item si $\Pi'$ tiene un ratio de aproximabilidad de $\rho'$, entonces $\Pi$ tiene un coeficiente de aproximaci\'on de $\rho = c(\rho')$.
+\item por otro lado (suponiendo que $P \neq NP$), si $\Pi$ no es aproximable para un coeficiente de aproximaci\'on $\rho$ (suponiendo $c$ invertible) entonces $\Pi'$ no es aproximable para un coeficiente de aproximaci\'on $\rho'=c^{-1}(\rho)$.
+
+\end{itemize}
+
+\end{obs}
+
+El estudio de este tipo de reducciones es extremademente \'util para el estudio en ciencias computacionales y en la comunidad de investigaci\'on operativa por dos principales motivos:
+
+El primero es por estructura. En lo que nos ayudan las reducciones es en afinar los diferentes problemas NP-Duros construyendo una jerarqu\'ia de clases en el interior de los problemas NP-Duros. Es decir, a pesar de que todos los problemas que est\'an en la clase NP-Duros puedan parecer igual de ``dif\'iciles'' de primeras, en realidad, hay algunos que se pueden aproximar mucho mejor que otros y las reducciones nos ayudan a comprender c\'omo de parecidos se pueden aproximar 2 problemas.
+
+El segundo motivo es ``operacional''. Este tipo de reducciones son una alternativa a la hora de hallar nuevos resultados de aproximabilidad, es decir, que cuando uno intenta resolver un nuevo problema $\Pi$, en vez de intentar demostrar su aproximabilidad buscando un algoritmo y calculando su coeficiente de aproximaci\'on lo que puede hacer es usar estas reducciones con problemas similares a $\Pi$. Por ejemplo, supongamos que existen dos reducciones que preservan la aproximabilidad $R$ de $\Pi$ a $\Pi'$ y $Q$ de $\Pi''$ a $\Pi$ y ya sabemos un coeficiente de aproximaci\'on $r'$ para $\Pi'$ y un resultado de inaproximabilidad para $\Pi''$ en el que no se puede aproximar m\'as que $r''$ (a no ser que se cumple que $P=NP$). Entonces por las propiedades de R y Q, obtenemos que $\Pi$ va a ser aproximable por un coeficiente de aproximaci\'on $c'(r')$ pero no va a poder ser aproximable por $c''(r'')$, donde $c'$ y $c''$ son dos funciones reales positivas que dependen de R y Q.
+
+\subsection{Algunos ejemplos de reducciones polin\'omicas que preservan aproximabilidad.}
+
+Existen una gran cantidad de reducciones que preservan aproximabilidad a d\'ia de hoy, en esta secci\'on veremos algunos ejemplos, empezaremos con 2 reducciones muy sencillas que no difieren mucho de su versi\'on de decisi\'on y por \'ultimo veremos la reducci\'on entre el PROBLEMA DE MAXIMIZACI\'ON DEL CONJUNTO INDEPENDIENTE VALORADO (MAX PCIV) \footnote{Dado un grafo valorado en v\'ertices G, el objetivo es determinar un conjunto independiente maximizando la suma de los pesos de los v\'ertices.} y el MAX PCI.
+
+\begin{eje}
+
+\textbf{MIN COLORING y MIN PARTITION INTO INDEPENDENT SETS\footnote{Dado un grafo G, MIN PARTITION INTO INDEPENDENT SETS consiste en determinar la partici\'on m\'as pequeña del conjunto de v\'ertices G en subconjuntos del mismo en el que cada subconjunto sea un conjunto independiente.}.}
+
+Supongamos que conocemos un algoritmo de aproximaci\'on A para MIN COLORING con un coeficiente de aproximaci\'on expresado como una funci\'on que depende del tamaño del grafo $n$. Como podemos observar, realmente un coloreado de un grafo es lo mismo que dividir este en varios conjuntos independientes \cite{approx_core}. Por lo que resolver un problema u otro nos es indiferente.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=6cm, height=4cm]{PCIP}
+\caption{Ejemplo de como un coloreado de grafos es lo mismo que la partici\'on m\'inima de conjuntos independientes.}
+\label{redux:fig:1}
+\end{figure}
+
+Por tanto nuestra reducci\'on R estará formada por 3 funciones identidad (f, g y c).
+
+Y como sabemos que MIN COLORING $\in$ DAPX \cite{red1} entonces podemos concluir que MIN PARTITION INTO INDEPENDENT SETS $\in$ DAPX.
+
+\end{eje}
+
+\begin{eje}
+
+\textbf{MAX PCI y MAX CLIQUE.}
+
+Como ya vimos en la secci\'on \ref{red_poli} un conjunto independiente en un grafo G se transforma en una CLIQUE en \=G y vice-versa.
+
+Supongamos que tenemos un algoritmo de aproximaci\'on A para MAX PCI con un coeficiente de aproximaci\'on expresado como una funci\'on que depende de n (el tamaño del grafo). Ahora si queremos aproximar MAX CLIQUE en un grafo G, lo \'unico que tendr\'iamos que hacer ser\'ia construir \=G y ejecutar el algoritmo A en \=G. El algoritmo A nos devolver\'a un conjunto independiente en \=G que se convierte en una CLIQUE en G. Esta CLIQUE tiene el mismo tamaño que el conjunto independiente calculado y como G y \=G tienen el mismo tamaño, el coeficiente de aproximaci\'on conseguido para MAX PCI es el mismo que para MAX CLIQUE.
+
+Ahora bien, formalmente tenemos que definir la reducci\'on R, para eso tenemos que dar las tres funciones.
+
+\begin{itemize}
+\item $f$ nos transformar\'a G en \=G.
+\item $g=id$ ya que el conjunto de v\'ertices soluci\'on no cambia.
+\item con $c$ tenemos un problema ya que como vimos en la secci\'on \ref{pciT} el coeficiente de aproximaci\'on depend\'ia de $\Delta(G)$\footnote{siendo G el grafo para el PCI en ese momento.} y no tenemos ninguna relaci\'on entre $\Delta(G)$ y $\Delta(\bar{G})$. Pero lo que si sabemos es que la cota nos vale para $\Delta(\bar{G})$. Por tanto $c$ transforma G por G' en el coeficiente de aproximaci\'on. Por tanto, $\rho(G) = \frac{2}{\Delta(\bar{G})}$.
+\end{itemize}
+
+Y por tanto como demostramos anteriormente (secci\'on \ref{pciT}) que MAX PCI $\in$ Poly-APX, podemos afirmar que MAX-CLIQUE $\in$ Poly-APX.
+
+\end{eje}
+
+\begin{eje}
+
+\textbf{MAX-PCI y MAX-PCIV.}\cite{red2}
+
+Consideramos el grafo $G(V,E)$ con pesos $\overrightarrow{w}$en los v\'ertices. Para que la transformaci\'on sea polin\'omica con respecto a n, es decir, con respecto al orden de $G$, los pesos de los v\'ertices tienen que estar acotados polin\'omicamente respecto de $n$. Transformamos nuestra entrada en otra entrada de $G'(V',E')$ de MAX-PCI como sigue:
+
+\begin{enumerate}
+\item Reemplazamos cada v\'ertice $v_i\in V$ por un conjunto independiente $W_i$ formado por $w_i$ nuevos v\'ertices.
+\item Reemplazamos cada arista $(v_i,v_j)\in E$ por un grafo completo bipartito entre los v\'ertices de los conjuntos independientes $W_i$ y $W_j$ en $G'$.
+\end{enumerate}
+
+Esta transformaci\'on se realiza en tiempo polin\'omico ya que el grafo resultante $G'$ tiene $\sum_{i=1}^{n} w_i$ v\'ertices y cada $w_i$ es polin\'omico respecto de $n$.
+
+Ahora consideremos un conjunto independiente $S'$ de $G'$ y sin p\'erdida de generalidad supongamos que es maximal respecto de la inclusi\'on (en caso de que no lo sea, podemos añadir v\'ertices hasta que lleguemos al maximal). Entonces obtenemos $S=\bigcup_{j-1}^k W_{i_j}$ por tanto existe un $k$ tal que $S'$ est\'a formado por $k$ conjuntos independientes $W_{i_j}$, $j=1,...,k$, que se corresponden con $k$ v\'ertices que forman un conjunto independiente en V, $v_{i_1},...,v_{i_k}\in V$. Por lo que $|S|=\sum_{j=1}^k w_{i_j}$.
+
+Por lo tanto, si consideramos un conjunto independiente $S'$ de $G'$. Si $W_i$, con $i=1,...,k$, son los conjuntos independientes que forman $S'$, entonces un conjunto independiente $S$ de $G$ puede ser construido de forma que contenga los v\'ertices correspondientes $v_1,...,v_k$ de $V$ con pesos $w_1,...,w_k$, respectivamente. El peso total de $S$ ser\'ia $\sum_{i=1}^k w_i=|S'|$.
+
+Ahora supongamos que tenemos un algoritmo de aproximaci\'on en tiempo polin\'omico A con un coeficiente de aproximaci\'on $r$ para MAX-PCI y consideremos una entrada ($G(V,E),\overrightarrow{w}$) de MAX-PCIV, entonces el siguiente algoritmo (que llamaremos WA) es un algoritmo de aproximaci\'on en tiempo polin\'omico para MAX-PCIV:
+
+\vspace{0,3cm}
+
+\textbf{Algoritmo WA:}
+
+\begin{enumerate}
+\item Construimos $G'$ como hemos hecho anteriormente.
+\item Ejecutamos el algoritmo A en $G'$, y llamaremos $S'$ a la soluci\'on que nos devuelve.
+\item En base a $S'$ construimos un conjunto independiente $S$ de $G$ como hemos mencionado recientemente.
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=11cm, height=4cm]{redux1}
+\caption{A la izquierda: una arista de G, a la derecha: la transformaci\'on de esa arista para G'.}
+\label{redux:fig:2}
+\end{figure}
+
+Por lo que hemos visto antes, para cualquier soluci\'on $S'$ en $G'$ somos capaces de construir una soluci\'on S para G de valor $|S'|$. Por tanto, por el algoritmo WA conseguimos alcanzar el mismo coeficiente de aproximaci\'on en MAX-PCIV que para MAX-PCI con respecto al tamaño del problema.
+
+Ahora se nos presenta un problema, y es que respecto de $n$ s\'i que conserva el coeficiente de aproximaci\'on pero como vimos en la secci\'on \ref{pciT}, el coeficiente de aproximaci\'on depend\'ia de $\Delta(G)$, que con este algoritmo puede variar (ya que añadimos aristas en los v\'ertices) y como mucho pueden aumentar hasta $w_{max}$ veces m\'as con $w_{max}=\{max\text{ }w_i | i=1...n\}$. Por tanto el coeficiente de aproximaci\'on para MAX-PCI se transformar\'a en un coeficiente de aproximaci\'on de $O(f(\Delta(G)w_{max}))$ para MAX-PCIV.
+
+Por tanto nos faltar\'ia ver cu\'al es nuestra reducci\'on R:
+
+\begin{itemize}
+\item Nuestra f transformar\'a $G$ en $G'$ como se indica en el paso 1 del algoritmo WA.
+\item g ser\'a la funci\'on que transforma $S'$ en $S$ indicada por el paso 3 del algoritmo WA.
+\item Por \'ultimo, c ser\'ia una funci\'on que cumple que $c(\Delta(G))=\Delta(G)w_{max}$.
+\end{itemize}
+
+Y como hemos visto en la secci\'on \ref{pciT} que MAX-PCI $\in$ Poly-APX entonces afirmamos que MAX-PCIV $\in$ Poly-APX.
+
+\end{eje}
+
+\newpage
+
+\section{Conclusi\'on.}
+
+El problema de P=NP no ha podido ser resuelto todavía a pesar de que una gran cantidad de grandes investigadores lo hayan intentado. A priori parece que P no puede ser igual a NP pero despu\'es de casi 50 años a\'un no se ha logrado poder demostrar este resultado. A causa de esto han surgido diferentes estudios para tratar los diferentes problemas de la clase NP, m\'as concretamente de la clase de problemas NP-Completos, en este caso, hablamos de las aproximaciones polin\'omicas.
+
+Despu\'es de indagar en profundidad sobre este tema he llegado a darme cuenta de lo importante y necesario que es este estudio, ya que viendo la dificultad que acarrea la hip\'otesis P=NP conviene estudiar otras v\'ias para tratar esta clase de problemas.
+
+Gracias a este estudio podemos ver que a pesar de que parezca que los problemas NP-Duros son todos igual de dif\'iciles de resolver, a la hora de hallar una soluci\'on aproximada difieren mucho entre ellos. A pesar de que no es la soluci\'on para algunos problemas, para muchos otros es una gran forma de afrontarlos, como por ejemplo con el problema de la mochila.
+
+El estudio de la aproximabilidad no es tarea f\'acil, a d\'ia de hoy a\'un hay muchos problemas que se sit\'uan en una realidad incierta sobre c\'omo de aproximables son y es muy posible que esto continue por moderado espacio de tiempo ya que son muchos los que han intentado hallar resultados y solo unos pocos los consiguen.
+
+Adem\'as, es un estudio muy \'util que nos acerca a comprender mejor el mundo que nos rodea, una gran cantidad de estos problemas surgen de la necesidad de resolver un problema en el mundo real al que est\'an asociados, y a pesar de que encontrar la mejor soluci\'on pueda parecer f\'acil, muchas veces resulta demasiado costoso y tenemos que recurrir a otras estrategias, es m\'as, lo m\'as probable es que todos pensemos en problemas de grandes empresas o en transporte cuando hablamos de este acercamiento a los problemas, pero si nos paramos a pensar, en nuestra vida siempre nos vamos a topar con problemas cuya mejor soluci\'on va a ser imposible de alcanzar o muy complicada en el mejor de los casos y acabaremos tomando la opci\'on de no conseguir el mejor resultado, pero s\'i hacerlo de una manera eficiente.
+
+\newpage
+
+\bibliographystyle{plain}
+\bibliography{miBibliografia}
+
+
+
 
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
