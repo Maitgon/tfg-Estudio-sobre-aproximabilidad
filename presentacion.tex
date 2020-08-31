@@ -1,0 +1,484 @@
+\documentclass{beamer}
+\usetheme{PaloAlto}
+\usepackage[spanish]{babel}
+\usepackage{tcolorbox}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\definecolor{studentbrown}{RGB}{124,71,50}
+\definecolor{studentgreen}{RGB}{31,78,58}
+\definecolor{studentpurple}{RGB}{41,31,78}
+
+\newtcolorbox{mybox}[1][Theorem:]{
+colback=white,
+colbacktitle=white,
+coltitle=red!70!black,
+colframe=red!70!black,
+boxrule=1pt,
+titlerule=0pt,
+arc=15pt,
+title={\strut#1}
+}
+
+\newenvironment{variableblock}[3]{%
+  \setbeamercolor{block body}{#2}
+  \setbeamercolor{block title}{#3}
+  \begin{block}{#1}}{\end{block}}
+
+\title{Estudio de complejidad y aproximabilidad}
+\author{Aitor Godoy Fresneda}
+\institute{Universidad Complutense de Madrid \\ Facultad de Ciencias Matem\'aticas}
+\date{Julio 2020}
+
+\begin{document}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+%%%  ÍNDICE
+
+\begin{frame}
+\frametitle{\'Indice}
+\tableofcontents
+\end{frame}
+
+
+\newpage
+
+%%%  SECCIÓN 1
+
+\begin{frame}
+\frametitle{Motivaci\'on.}
+\section{Motivaci\'on.}
+
+\begin{itemize}
+\item ¿P = NP?
+\item Soluci\'ones \'optimas para problemas NP-Completos costosas.
+\item Algoritmos de aproximaci\'on polin\'omicos.
+\end{itemize}
+
+\end{frame}
+
+%%%  SECCIÓN 2
+
+\begin{frame}{Preliminares.}
+\section{Preliminares.}
+\begin{block}{La clase P.}
+Decimos que un problema pertenece a la clase P cuando existe una m\'aquina de Turing determinista que lo resuleve en tiempo polin\'omico.
+\end{block}
+
+\begin{variableblock}{Ejemplo.}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+\begin{itemize}
+\item El problema de primalidad.
+\item Problema de ordenaci\'on de un vector de enteros.
+\item Encontrar el camino m\'as corto entre 2 v\'ertices de un grafo.
+\end{itemize}
+\end{variableblock}
+
+\end{frame}
+
+\begin{frame}{Preliminares.}
+
+\begin{block}{La clase NP.}
+Decimos que un problema pertenece a la clase NP cuando existe una m\'aquina de Turing no determinista que lo resuelve en tiempo polin\'omico.
+\end{block}
+
+\begin{columns}[T] % align columns
+\begin{column}{.46\textwidth}
+\begin{variableblock}{Ejemplo.}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+\begin{itemize}
+\item El problema de la mochila.
+\item El problema MIN TSP.
+\item El problema CLIQUE.
+\end{itemize}
+\end{variableblock}
+\end{column}%
+\hfill%
+\begin{column}{.50\textwidth}
+\begin{variableblock}{Observaciones.}{bg=studentpurple!20,fg=black}{bg=studentpurple,fg=white}
+\begin{itemize}
+\item P $\subseteq$ NP.
+\item La soluci\'on se puede comprobar en tiempo polin\'omico.
+\end{itemize}
+\end{variableblock}
+\end{column}%
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Preliminares.}
+
+\begin{columns}[T]
+\begin{column}{.46\textwidth}
+\begin{block}{Reducciones polin\'omicas.}
+\begin{itemize}
+\item Transformaci\'on de $P_1$ a $P_2$ en tiempo polin\'omico.
+\item Transforma entradas de $P_1$ a $P_2$ en tiempo polin\'omico.
+\item Nueva entrada polin\'omica respecto de la entrada de $P_1$.
+\end{itemize}
+\end{block}
+\end{column}
+\begin{column}{.50\textwidth}
+\centering
+\includegraphics[width=0.6\textwidth,height=.70\textheight]{reduccion.png}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Preliminares.}
+
+\begin{columns}[T]
+
+\begin{column}{.46\textwidth}
+\begin{block}{Problemas NP-Duros y NP-Completos.}
+\begin{itemize}
+\item Un problema P es NP-Duro si para todo problema P' $\in$ NP existe una reducci\'on polin\'omica de P' a P
+\item Un problema P es NP-Completo si P es NP-Duro y P $\in$ NP
+\end{itemize}
+\end{block}
+\end{column}
+
+\begin{column}{.50\textwidth}
+\begin{variableblock}{Ejemplo.}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+\begin{itemize}
+\item El problema de la mochila.
+\item El Problema de PCI.
+\item El problema SAT.
+\end{itemize}
+\end{variableblock}
+
+\centering
+\includegraphics[width=0.7\textwidth,height=.35\textheight]{PyNP.jpg}
+
+\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Preliminares.}
+
+\begin{columns}[T]
+
+\begin{column}{.46\textwidth}
+\begin{variableblock}{Ejemplo.}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+\begin{itemize}
+\item El Teorema de COOK.
+\item Reducci\'on de SAT a 3-SAT.
+\item Reducci\'on de 3-SAT a PCI.
+\item Reducci\'on de PCI a CLIQUE.
+\end{itemize}
+\end{variableblock}
+\end{column}
+
+\begin{column}{.50\textwidth}
+
+\centering
+\includegraphics[width=0.8\textwidth,height=.75\textheight]{reducciones2.png}
+
+\end{column}
+\end{columns}
+    
+\end{frame}
+
+%%%%%  SECCIÓN 3.
+
+\begin{frame}{Clases de aproximaci\'on.}
+
+\section{Clases de aproximaci\'on.}
+
+\begin{itemize}
+\item Contraparte de optimizaci\'on de los problemas de decisi\'on.
+\item Buscamos soluciones ``buenas'' en tiempo polin\'omico.
+\item Las diferentes clases tienen una jerarqu\'ia.
+\end{itemize}
+
+\begin{block}{La clase NPO.}
+\begin{itemize}
+\item Contraparte de optimizaci\'on de los problemas NP.
+\item 4-tupla $(I, Sol, m, obj)$.
+\item Distinci\'on entre maximizaci\'on y minimizaci\'on.
+\end{itemize}
+\end{block}
+    
+\end{frame}
+
+\begin{frame}{Clases de aproximaci\'on.}
+Dos paradigmas de aproximaci\'on principales:
+
+\begin{columns}[T]
+
+\begin{column}{.46\textwidth}
+\begin{block}{Paradigma de aproximaci\'on est\'andar.}
+\begin{itemize}
+\item $\rho_A(I)=\frac{m_A(I,S)}{opt(I)}$.
+\item $[1,\infty)$ para minimizaci\'on.
+\item $(0,1]$ para maximizaci\'on.
+\end{itemize}
+\end{block}
+\end{column}
+
+\begin{column}{.44\textwidth}
+\begin{block}{Paradigma de aproximaci\'on diferencial.}
+\begin{itemize}
+\item $\delta_A(I)=\frac{|\omega(I)-m_A(I,S)|}{|\omega(I)-opt(I)|}$.
+\item $[0,1]$ para minimizaci\'on.
+\item $[0,1]$ para maximizaci\'on.
+\end{itemize}
+\end{block}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Clases de aproximaci\'on.}
+
+Clases poco optimistas.
+
+\begin{block}{Exp-APX y Exp-DAPX.}
+El coeficiente de aproximaci\'on crece (o decrece) de forma exponencial
+\end{block}
+
+\begin{block}{Poly-APX y Poly-DAPX.}
+El coeficiente de aproximaci\'on crece (o decrece) de forma polin\'omica.
+\end{block}
+
+\begin{block}{Log-APX y Log-DAPX.}
+El coeficiente de aproximaci\'on crece (o decrece) de forma logar\'itmica.
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{Clases de aproximaci\'on.}
+Clases m\'as optimistas.
+
+\begin{block}{APX y DAPX.}
+El coeficiente de aproximaci\'on es constante.
+\end{block}
+
+\begin{block}{PTAS y DPTAS.}
+Podemos aproximar nuestra soluci\'on a la \'optima tanto como queramos de modo que respecto del tamaño del problema obtengamos un algoritmo en tiempo polin\'omico pero respecto de cu\'anto queremos aproximar no necesariamente.
+\end{block}
+
+\begin{block}{FPTAS y DFPTAS.}
+FPTAS es como PTAS pero si que es polin\'omico respecto de cu\'anto lo quieres aproximar.
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{Clases de aproximaci\'on.}
+
+Las clases de aproximaci\'on presenta una jerarqu\'ia:
+
+\begin{columns}[T]
+
+\begin{column}{.50\textwidth}
+\includegraphics[width=\textwidth,height=.50\textheight]{Hierar1.png}
+\end{column}
+
+\begin{column}{.46\textwidth}
+\includegraphics[width=\textwidth,height=.50\textheight]{Hierar2.png}
+\end{column}
+\end{columns}
+    
+\end{frame}
+
+%%% SECCIÓN  4.
+
+\begin{frame}{Aproximabilidad en problemas NP-Duros.}
+
+\section{Aproximabilidad en problemas NP-Duros.}
+
+\begin{columns}[T]
+
+\begin{column}{.46\textwidth}
+\begin{variableblock}{El problema de la mochila.}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+Est\'a en FPTAS. El algoritmo de aproximaci\'on es el siguiente:
+\begin{enumerate}
+\item Fijamos un $\varepsilon \in (0,1)$ y consideramos la entrada $I'=((a_i',c_i)_{i=1,...,n},b)$ con $a_i'=\lfloor\frac{a_i}{t}\rfloor$ con $t=\frac{a_{max}\varepsilon}{n}$.
+\item Salida S := PROGRAMACI\'ON DIN\'AMICA(I').
+\end{enumerate}
+\end{variableblock}
+\end{column}
+
+\begin{column}{.50\textwidth}
+
+\includegraphics[width=\textwidth,height=.80\textheight]{KNAPSACK2.png}
+
+\end{column}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}{Aproximabilidad en problemas NP-Duros.}
+
+\begin{columns}[T]
+
+\begin{column}{.36\textwidth}
+\centering
+\includegraphics[width=\textwidth,height=.70\textheight]{PCI.png}
+\end{column}
+
+\begin{column}{.60\textwidth}
+
+\begin{variableblock}{El problema del Conjunto Independiente maximal (PCI).}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+Est\'a en Poly-Apx. Algoritmo IS:
+\begin{enumerate}
+\item Resolver la relajaci\'on lineal del PCI para hallar $V_0$, $V_1$ y $V_{1/2}$.
+\item Colorear $G[V_{1/2}]$ con a lo sumo $\Delta(G[V_{1/2}])$ colores. y definir $\hat{S}$ como el subconjunto de v\'ertices de $G[V_{1/2}]$ cuyo color es el que m\'as v\'ertices cubre del grafo.
+\item Devolver $S = V_1 \bigcup \hat{S}$
+\end{enumerate}
+\end{variableblock}
+
+\end{column}
+\end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Aproximabilidad en problemas NP-Duros.}
+
+\begin{columns}[T]
+
+\begin{column}{.46\textwidth}
+\begin{variableblock}{MIN VERTEX COVER (MVC).}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+Est\'a en Apx. Algoritmo MATCHING:
+\begin{enumerate}
+\item Computar un matching maximal en G.
+\item Devolver el conjunto C de los v\'ertices de las aristas de M.
+\end{enumerate}
+\end{variableblock}
+\end{column}
+
+\begin{column}{.50\textwidth}
+\centering
+\includegraphics[width=0.8\textwidth,height=.70\textheight]{MVC.png}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}{Aproximabilidad en problemas NP-Duros.}
+
+\begin{columns}[T]
+
+\begin{column}{.40\textwidth}
+\includegraphics[width=0.75\textwidth,height=.35\textheight]{tsp1.png}
+\includegraphics[width=0.75\textwidth,height=.45\textheight]{tsp3.png}
+\end{column}
+
+\begin{column}{.56\textwidth}
+\begin{variableblock}{MIN TSP.}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+Est\'a en DAPX. Algoritmo 2\_OPT:
+\begin{enumerate}
+\item Construir un ciclo hamiltoniano $T$.
+\item consideramos dos aristas $a_{ij}$, $a_{i'j'}$ y si procede cambiarlas las cambiamos por $a_{ii'}$, $a_{jj'}$.
+\item repetir el paso 2 hasta que no haya que cambiar ninguna arista.
+\item Devolver $T$.
+\end{enumerate}
+\end{variableblock}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+%%% SECCIÓN 5.
+
+\begin{frame}{Aproximabilidad mediante reducciones.}
+
+\section{Aproximabilidad mediante reducciones.}
+
+\begin{itemize}
+\item Reducciones polin\'omicas para problemas de optimizaci\'on.
+\item Preservan aproximabilidad.
+\item Transformaci\'on del coeficiente de aproximabilidad.
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}{Aproximabilidad mediante reducciones.}
+
+\begin{block}{Reducciones que preservan aproximabilidad.}
+Dados dos problemas NPO $\Pi$ y $\Pi'$ , una reducci\'on que preserva aproximabilidad R  de $\Pi$ a $\Pi'$ ($\Pi \leq_{R} \Pi'$) es una terna $(f, g, c)$ de funciones cumputables en tiempo polin\'omico tal que:
+
+\begin{itemize}
+
+\item $f$ transforma una entrada $I\in\textbf{I}$ en una entrada $f(I)\in\textbf{I'}$.
+\item $g$ transforma una soluci\'on de $\Pi'$ en una soluci\'on de $\Pi$.
+\item $c$ transforma el coeficiente de aproximaci\'on de aproximaci\'on de $\Pi'$ en uno de $\Pi$.
+
+\end{itemize}
+\end{block}
+    
+\end{frame}
+
+
+\begin{frame}{Aproximabilidad mediante reducciones.}
+
+Esta clase de reducciones son muy \'utiles principalmente por dos motivos:
+
+
+\begin{itemize}
+    \item Por motivos estructurales:
+    
+    - Gerarqu\'ia en los problemas NPO.
+    
+    - No todos los problemas son igual de dif\'iciles de aproximar.
+\end{itemize}
+\begin{itemize}
+    \item Por motivos operacionales:
+    
+    - No siempre se puede hallar aproximabilidad directamente.
+    
+    - Herramienta muy \'util para hallar nuevos resultados.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Aproximabilidad mediante reducciones.}
+
+\begin{columns}[T]
+\begin{column}{.46\textwidth}
+\begin{variableblock}{Ejemplos.}{bg=studentgreen!20,fg=black}{bg=studentgreen,fg=white}
+\begin{enumerate}
+\item Reducci\'on de MAX PCIV a MAX PCI.
+\item Reducci\'on de MIN COLORING a MIN Partition Into Independent Sets.
+\item Reducci\'on de MAX PCI a MAX CLIQUE.
+\end{enumerate}
+\end{variableblock}
+\end{column}
+
+\begin{column}{.50\textwidth}
+\centering
+\includegraphics[width=0.5\textwidth,height=.35\textheight]{redux1.png}
+\includegraphics[width=0.7\textwidth,height=.40\textheight]{redux2.png}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+%%% SECCIÓN 6.
+
+\begin{frame}{Conclusiones.}
+
+\section{Conclusiones.}
+
+\begin{itemize}
+\item La aproximabilidad es muy \'util ya que no sabemos si $P=NP$.
+\item Necesaria ya que no se ha conseguido encontrar algoritmos ``r\'apidos'' para algunos problemas a la hora de hallar la soluci\'on \'optima.
+\item Nos ayuda a comprender el mundo que nos rodea.
+\item No siempre vamos a poder hallar la mejor soluci\'on a nuestros problemas y vamos a tener que encontrar otra manera de hallar una soluci\'on lo suficientemente buena
+\end{itemize}
+    
+\end{frame}
+
+\end{document}
